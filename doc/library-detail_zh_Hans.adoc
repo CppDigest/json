@@ -2,36 +2,30 @@ https://www.boost.org/doc/libs/release/libs/json/[image:https://raw.githubuserco
 
 [width="100%", cols="12%,43%,45%", options="header"]
 |===
-|Branch |https://github.com/boostorg/json/tree/master[`master`]
+|分支 |https://github.com/boostorg/json/tree/master[`master`]
 |https://github.com/boostorg/json/tree/develop[`develop`]
 |https://azure.microsoft.com/en-us/services/devops/pipelines/[Azure]
-|https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=5&branchName=master[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/master[Build
-Status]]
-|https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=8&branchName=develop[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/develop[Build
-Status]]
+|https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=5&branchName=master[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/master[构建状态]]
+|https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=8&branchName=develop[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/develop[构建状态]]
 
-|Docs
-|https://www.boost.org/doc/libs/master/libs/json/[image:https://img.shields.io/badge/docs-master-brightgreen.svg[Documentation]]
-|https://www.boost.org/doc/libs/develop/libs/json/[image:https://img.shields.io/badge/docs-develop-brightgreen.svg[Documentation]]
+|文档
+|https://www.boost.org/doc/libs/master/libs/json/[image:https://img.shields.io/badge/docs-master-brightgreen.svg[文档]]
+|https://www.boost.org/doc/libs/develop/libs/json/[image:https://img.shields.io/badge/docs-develop-brightgreen.svg[文档]]
 
 |https://drone.io/[Drone]
-|https://drone.cpp.al/boostorg/json[image:https://drone.cpp.al/api/badges/boostorg/json/status.svg?ref=refs/heads/master[Build
-Status]]
-|https://drone.cpp.al/boostorg/json[image:https://drone.cpp.al/api/badges/boostorg/json/status.svg?ref=refs/heads/develop[Build
-Status]]
+|https://drone.cpp.al/boostorg/json[image:https://drone.cpp.al/api/badges/boostorg/json/status.svg?ref=refs/heads/master[构建状态]]
+|https://drone.cpp.al/boostorg/json[image:https://drone.cpp.al/api/badges/boostorg/json/status.svg?ref=refs/heads/develop[构建状态]]
 
-|Matrix
-|http://www.boost.org/development/tests/master/developer/json.html[image:https://img.shields.io/badge/matrix-master-brightgreen.svg[Matrix]]
-|http://www.boost.org/development/tests/develop/developer/json.html[image:https://img.shields.io/badge/matrix-develop-brightgreen.svg[Matrix]]
+|矩阵
+|http://www.boost.org/development/tests/master/developer/json.html[image:https://img.shields.io/badge/matrix-master-brightgreen.svg[矩阵]]
+|http://www.boost.org/development/tests/develop/developer/json.html[image:https://img.shields.io/badge/matrix-develop-brightgreen.svg[矩阵]]
 
-|Fuzzing |—
-|https://github.com/boostorg/json/actions?query=workflow%3Afuzz+branch%3Adevelop[image:https://github.com/boostorg/json/workflows/fuzz/badge.svg?branch=develop[fuzz]]
+|模糊测试 |—
+|https://github.com/boostorg/json/actions?query=workflow%3Afuzz+branch%3Adevelop[image:https://github.com/boostorg/json/workflows/fuzz/badge.svg?branch=develop[模糊测试]]
 
 |https://ci.appveyor.com/[Appveyor]
-|https://ci.appveyor.com/project/vinniefalco/cppalliance-json/branch/master[image:https://ci.appveyor.com/api/projects/status/8csswcnmfm798203?branch=master&svg=true[Build
-status]]
-|https://ci.appveyor.com/project/vinniefalco/cppalliance-json/branch/develop[image:https://ci.appveyor.com/api/projects/status/8csswcnmfm798203?branch=develop&svg=true[Build
-status]]
+|https://ci.appveyor.com/project/vinniefalco/cppalliance-json/branch/master[image:https://ci.appveyor.com/api/projects/status/8csswcnmfm798203?branch=master&svg=true[构建状态]]
+|https://ci.appveyor.com/project/vinniefalco/cppalliance-json/branch/develop[image:https://ci.appveyor.com/api/projects/status/8csswcnmfm798203?branch=develop&svg=true[构建状态]]
 
 |https://codecov.io[codecov.io]
 |https://codecov.io/gh/boostorg/json/branch/master[image:https://codecov.io/gh/boostorg/json/branch/master/graph/badge.svg[codecov]]
@@ -40,89 +34,89 @@ status]]
 
 == Boost.JSON
 
-=== Overview
+=== 概述
 
-Boost.JSON is a portable C++ library which provides containers and algorithms that implement https://json.org/[JavaScript Object Notation], or simply ``JSON'', a lightweight data-interchange format. This format is easy for humans to read and write, and easy for machines to parse and generate. It is based on a subset of the JavaScript Programming Language (https://www.ecma-international.org/ecma-262/10.0/index.html[Standard ECMA-262]), and is currently standardised in https://datatracker.ietf.org/doc/html/rfc8259[RFC 8259]. JSON is a text format that is language-independent but uses conventions that are familiar to programmers of the C-family of languages, including C, C++, C#, Java, JavaScript, Perl, Python, and many others. These properties make JSON an ideal data-interchange language.
+Boost.JSON 是一个可移植的 C++ 库，提供实现 https://json.org/[JavaScript 对象表示法]（简称 JSON）的容器和算法。JSON 是一种轻量级的数据交换格式，易于人阅读和编写，也易于机器解析和生成。它基于 JavaScript 编程语言（https://www.ecma-international.org/ecma-262/10.0/index.html[标准 ECMA-262]）的一个子集，目前已在 https://datatracker.ietf.org/doc/html/rfc8259[RFC 8259] 中标准化。JSON 是一种独立于语言的文本格式，但使用了 C 语言家族（包括 C、C++、C#、Java、JavaScript、Perl、Python 等）程序员熟悉的约定。这些特性使 JSON 成为理想的数据交换语言。
 
-This library focuses on a common and popular use-case: parsing and serializing to and from a container called `value` which holds JSON types. Any `value` which you build can be serialized and then deserialized, guaranteeing that the result will be equal to the original value. Whatever JSON output you produce with this library will be readable by most common JSON implementations in any language.
+该库专注于一个常见且流行的用例：解析和序列化到一个名为 `value` 的容器，该容器持有 JSON 类型。您构建的任何 `value` 都可以被序列化然后反序列化，保证结果与原始值相等。使用该库生成的任何 JSON 输出均可被大多数常见编程语言的 JSON 实现读取。
 
-The `value` container is designed to be well suited as a vocabulary type appropriate for use in public interfaces and libraries, allowing them to be composed. The library restricts the representable data types to the ranges which are almost universally accepted by most JSON implementations, especially JavaScript. The parser and serializer are both highly performant, meeting or exceeding the benchmark performance of the best comparable libraries. Allocators are very well supported. Code which uses these types will be easy to understand, flexible, and performant.
+`value` 容器设计为非常适合作为公共接口和库中使用的词汇类型，允许它们组合。该库将可表示的数据类型限制在几乎所有 JSON 实现（尤其是 JavaScript）普遍接受的范围内。解析器和序列化器都具有高性能，达到或超过最佳同类库的基准性能。分配器得到良好支持。使用这些类型的代码将易于理解、灵活且高效。
 
-Boost.JSON offers these features:
+Boost.JSON 提供以下特性：
 
-* Fast compilation
-* Require only C++11
-* Fast streaming parser and serializer
-* Constant-time key lookup for objects
-* Options to allow non-standard JSON
-* Easy and safe modern API with allocator support
-* Optional header-only, without linking to a library
+* 快速编译
+* 仅需 C++11
+* 快速流式解析器和序列化器
+* 对象的常量时间键查找
+* 允许非标准 JSON 的选项
+* 易于使用且安全的现代 API，支持分配器
+* 可选的仅头文件模式，无需链接库
 
-Visit https://boost.org/libs/json for complete documentation.
+访问 https://boost.org/libs/json 获取完整文档。
 
-=== Requirements
+=== 要求
 
-* Requires only C++11
-* Link to a built static or dynamic Boost library, or use header-only (see below)
-* Supports -fno-exceptions, detected automatically
+* 仅需 C++11
+* 链接到已构建的静态或动态 Boost 库，或使用仅头文件模式（见下文）
+* 支持 -fno-exceptions，自动检测
 
-The library relies heavily on these well known C++ types in its interfaces (henceforth termed _standard types_):
+该库在其接口中大量依赖以下众所周知的 C++ 类型（以下称为_标准类型_）：
 
 * `string_view`
 * `memory_resource`, `polymorphic_allocator`
 * `error_category`, `error_code`, `error_condition`, `system_error`
 
-==== Header-Only
+==== 仅头文件模式
 
-To use as header-only; that is, to eliminate the requirement to link a program to a static or dynamic Boost.JSON library, simply place the following line in exactly one new or existing source file in your project.
+要使用仅头文件模式（即消除将程序链接到静态或动态 Boost.JSON 库的要求），只需在项目中一个新建或现有源文件中添加以下行：
 
 ....
 #include <boost/json/src.hpp>
 ....
 
-MSVC users must also define the macro `BOOST_JSON_NO_LIB` to disable auto-linking.
+MSVC 用户还必须定义宏 `BOOST_JSON_NO_LIB` 以禁用自动链接。
 
-==== Embedded
+==== 嵌入式
 
-Boost.JSON works great on embedded devices. The library uses local stack buffers to increase the performance of some operations. On Intel platforms these buffers are large (4KB), while on non-Intel platforms they are small (256 bytes). To adjust the size of the stack buffers for embedded applications define this macro when building the library or including the function definitions:
+Boost.JSON 在嵌入式设备上表现优异。该库使用本地栈缓冲区来提高某些操作的性能。在 Intel 平台上这些缓冲区较大（4KB），而在非 Intel 平台上则较小（256 字节）。要为嵌入式应用程序调整栈缓冲区大小，请在构建库或包含函数定义时定义此宏：
 
 ....
 #define BOOST_JSON_STACK_BUFFER_SIZE 1024
 #include <boost/json/src.hpp>
 ....
 
-==== Supported Compilers
+==== 支持的编译器
 
-Boost.JSON has been tested with the following compilers:
+Boost.JSON 已在以下编译器上通过测试：
 
 * clang: 3.5, 3.6, 3.7, 3.8, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
 * gcc: 4.8, 4.9, 5, 6, 7, 8, 9, 10, 11, 12
 * msvc: 14.0, 14.1, 14.2, 14.3
 
-==== Supported JSON Text
+==== 支持的 JSON 文本
 
-The library expects input text to be encoded using UTF-8, which is a requirement put on all JSON exchanged between systems by the https://datatracker.ietf.org/doc/html/rfc8259#section-8.1[RFC]. Similarly, the text generated by the library is valid UTF-8.
+该库要求输入文本使用 UTF-8 编码，这是 https://datatracker.ietf.org/doc/html/rfc8259#section-8.1[RFC] 对所有系统间交换的 JSON 提出的要求。同样地，该库生成的文本也是有效的 UTF-8。
 
-The RFC does not allow byte order marks (BOM) to appear in JSON text, so the library considers BOM syntax errors.
+RFC 不允许字节顺序标记（BOM）出现在 JSON 文本中，因此该库将 BOM 视为语法错误。
 
-The library supports several popular JSON extensions. These have to be explicitly enabled.
+该库支持几种流行的 JSON 扩展。这些扩展需要显式启用。
 
-==== Visual Studio Solution
+==== Visual Studio 解决方案
 
 ....
 cmake -G "Visual Studio 16 2019" -A Win32 -B bin -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/msvc.cmake
 cmake -G "Visual Studio 16 2019" -A x64 -B bin64 -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/msvc.cmake
 ....
 
-=== Quality Assurance
+=== 质量保证
 
-The development infrastructure for the library includes these per-commit analyses:
+该库的开发基础设施包含以下每次提交的分析：
 
-* Coverage reports
-* Benchmark performance comparisons
-* Compilation and tests on Drone.io, Azure Pipelines, Appveyor
-* Fuzzing using clang-llvm and machine learning
+* 覆盖率报告
+* 基准性能比较
+* 在 Drone.io、Azure Pipelines、Appveyor 上进行编译和测试
+* 使用 clang-llvm 和机器学习进行模糊测试
 
-=== License
+=== 许可证
 
-Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt)
+根据 Boost 软件许可证 1.0 版分发。（请参阅随附的 LICENSE_1_0.txt 文件或在 https://www.boost.org/LICENSE_1_0.txt 复制）
