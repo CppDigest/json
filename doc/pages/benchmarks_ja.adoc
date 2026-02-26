@@ -9,207 +9,180 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [pagelevels=1,toclevels=1]
-= Benchmarks
-This section compares the performance of Boost.JSON with two widely used libraries with similar functionality: RapidJSON which is known for its performance, and JSON for Modern C++ which is known for feature-richness. The bench program measures the throughput of parsing and serialization for the a set of JSON representing typical workloads. These implementations are evaluated:
+= ベンチマーク
+このセクションでは、Boost.JSONのパフォーマンスを、2つの広く使われている類似機能のライブラリと比較します：パフォーマンスで知られるRapidJSONと、機能豊富さで知られるJSON for Modern C++です。ベンチプログラムは、典型的なワークロードを表すJSONのセットの解析とシリアライゼーションのスループットを測定します。以下の実装が評価されます：
 
-.Implementations
+.実装
 |===
-|Name|Description
+|名前e|説明
 
 | *boost(pool)*
-| Parses the input using a <<ref_monotonic_resource>>,
-        which is optimized for parsing without subsequent
-        modification.
-        The <<ref_stream_parser>> object is reused between
-        trials, allowing temporary memory allocated by the
-        implementation to persist and improve performance.
+| 入力は<<ref_monotonic_resource>>を使用して解析されます。これは、後続の変更なしの解析に最適化されています。<<ref_stream_parser>>オブジェクトは試行間で再利用され、実装によって割り当てられた一時メモリが保持され、パフォーマンスが向上します。
 
 | *boost*
-| Parses the input using the <<default_memory_resource, default memory
- resource>>, which uses the standard C++ allocator, and is designed for general
- use including mutation of the document after it is parsed. The
- <<ref_stream_parser>> object is reused between trials, allowing temporary
- memory allocated by the implementation to persist and improve performance.
+| 入力は<<default_memory_resource, デフォルトメモリリソース>>を使用して解析されます。これは標準C++アロケータを使用し、解析後のドキュメントの変更を含む一般的な使用のために設計されています。<<ref_stream_parser>>オブジェクトは試行間で再利用され、実装によって割り当てられた一時メモリが保持され、パフォーマンスが向上します。
 
 | *rapidjson(pool)*
-| Parses the input using an instance of
-  https://rapidjson.org/classrapidjson_1_1_memory_pool_allocator.html[`MemoryPoolAllocator`],
-  which is optimized for parsing without subsequent modification. The
-  https://rapidjson.org/classrapidjson_1_1_generic_document.html[`Document`]
-  object holding temporary memory is not reused between trials, otherwise
-  memory consumption grows without bounds and invalidates the benchmark.
+| 入力はhttps://rapidjson.org/classrapidjson_1_1_memory_pool_allocator.html[`MemoryPoolAllocator`]のインスタンスを使用して解析されます。これは、後続の変更なしの解析に最適化されています。一時メモリを保持するhttps://rapidjson.org/classrapidjson_1_1_generic_document.html[`Document`]オブジェクトは試行間で再利用されません。そうしないとメモリ消費量が際限なく増加し、ベンチマークが無効になります。
 
 | *rapidjson*
-| Parses the input using an instance of
-  https://rapidjson.org/classrapidjson_1_1_crt_allocator.html[`CrtAllocator`],
-  which uses the standard C++ allocator, and is designed for general use
-  including mutation of the document after it is parsed. The
-  https://rapidjson.org/classrapidjson_1_1_generic_document.html[`Document`]
-  object holding temporary memory is not reused between trials, otherwise
-  memory consumption grows without bounds and invalidates the benchmark.
+| 入力はhttps://rapidjson.org/classrapidjson_1_1_crt_allocator.html[`CrtAllocator`]のインスタンスを使用して解析されます。これは標準C++アロケータを使用し、解析後のドキュメントの変更を含む一般的な使用のために設計されています。一時メモリを保持するhttps://rapidjson.org/classrapidjson_1_1_generic_document.html[`Document`]オブジェクトは試行間で再利用されません。そうしないとメモリ消費量が際限なく増加し、ベンチマークが無効になります。
 
 | *nlohmann*
-| Parses the input using the static member function
-  https://nlohmann.github.io/json/classnlohmann_1_1basic__json_ab330c13ba254ea41fbc1c52c5c610f45.html[`json::parse`],
-  which uses the default `std` allocator, and is designed for general use
-  including mutation of the document after it is parsed. This library does not
-  provide an interface to reuse temporary storage used during parsing or
-  serialization on subsequent operations.
+| 入力は静的メンバ関数https://nlohmann.github.io/json/classnlohmann_1_1basic__json_ab330c13ba254ea41fbc1c52c5c610f45.html[`json::parse`]を使用して解析されます。これはデフォルトの`std`アロケータを使用し、解析後のドキュメントの変更を含む一般的な使用のために設計されています。このライブラリは、解析やシリアライゼーションで使用した一時ストレージを後続の操作で再利用するためのインターフェースを提供しません。
 |===
 
-== Methodology
-The input files are all loaded first. Then each configuration is run for a sufficient number of trials to last at least 5 seconds. The elapsed time, number of invocations (of parse or serialize), and bytes transferred are emitted as a sample along with a calculation of throughput expressed in megabytes per second. Several samples (currently five) are generated for each configuration. All but the median two samples are discarded, with the remaining samples averaged to produce a single number which is reported as the benchmark result.
+== 方法論
+入力ファイルは最初にすべてロードされます。次に、各設定について、少なくとも5秒間続く十分な試行回数で実行されます。経過時間、呼び出し回数（解析またはシリアライゼーション）、転送されたバイト数がサンプルとして出力され、メガバイト/秒で表されるスループットの計算とともに記録されます。各設定について複数のサンプル（現在は5つ）が生成されます。中央値の2つのサンプルを除くすべてが破棄され、残りのサンプルを平均して1つの数値とし、ベンチマーク結果として報告されます。
 
-The input files, available in the bench/data directory, are laid out thusly:
+入力ファイルは、bench/dataディレクトリにあり、以下のように配置されています：
 
-.Input Files
+.入力ファイル
 |===
-|Name|Size|Description
+|名前e|サイズe|説明
 
 | <<parse_apache_builds_json,*apache_builds.json*>>
 | 125KB
-| Data from the Apache Jenkins installation.
+| Apache Jenkinsインストールからのデータ。
 
 | <<parse_canada_json,*canada.json*>>
 | 2.2MB
-| The largest file, containing a large number of 2-element arrays holding
-  floating-point coordinate pairs.
+| 最大のファイルで、浮動小数点座標ペアを保持する2要素配列が多数含まれています。
 
 | <<parse_citm_catalog_json,*citm_catalog.json*>>
 | 1.69MB
-| A large JSON with a variety of nesting, types, and lengths.
+| 様々なネスト、型、長さを持つ大きなJSON。
 
 | <<parse_github_events_json,*github_events.json*>>
 | 64KB
-| An export of data from the Github Events API.
+| Github Events APIからのデータエクスポート。
 
 | <<parse_gsoc_2018_json,*gsoc-2018.json*>>
 | 3.25MB
-| Google Summer of Code 2018 data.
+| Google Summer of Code 2018のデータ。
 
 | <<parse_instruments_json,*instruments.json*>>
 | 216KB
-| An array of large objects.
+| 大きなオブジェクトの配列。
 
 | <<parse_marine_ik_json,*marine_ik.json*>>
 | 2.91MB
-| A three.js example model serialized to JSON.
+| three.jsのサンプルモデルをJSONにシリアライズしたもの。
 
 | <<parse_mesh_json,*mesh.json*>>
 | 707KB
-| A JSON representing a 3D mesh. Contains many floating-point numbers.
+| 3Dメッシュを表すJSON。多くの浮動小数点数を含みます。
 
 | <<parse_mesh_pretty_json,*mesh.pretty.json*>>
 | 1.54MB
-| mesh.json with whitespace added.
+| 空白を追加したmesh.json。
 
 | <<parse_numbers_json,*numbers.json*>>
 | 147KB
-| A array containing only floating-point numbers.
+| 浮動小数点数だけを含む配列。
 
 | <<parse_random_json,*random.json*>>
 | 499KB
-| A JSON with lots of Cyrillic characters.
+| キリル文字が多数含まれるJSON。
 
 | <<parse_twitter_json,*twitter.json*>>
 | 617KB
-| An export of data from Twitter's API.
+| TwitterのAPIからのデータエクスポート。
 
 | <<parse_twitterescaped_json,*twitterescaped.json*>>
 | 550KB
-| twitter.json with whitespace removed and non-ASCII characters replaced with
-  Unicode escapes.
+| 空白を削除し、非ASCII文字をUnicodeエスケープに置き換えたtwitter.json。
 
 | <<parse_update_center_json,*update-center.json*>>
 | 521KB
-| An export of data from Twitter's API.
+| TwitterのAPIからのデータエクスポート。
 |===
 
-Hardware used for testing: **Intel(R) Core(TM) i7-7700K CPU @ 4.20GHz**, Windows 10, 32GB RAM.
+テストに使用したハードウェア: **Intel(R) Core(TM) i7-7700K CPU @ 4.20GHz**、Windows 10、32GB RAM。
 
-Compilers and optimization flags: gcc 8.1 (-O3), clang 12.0 (-O3), and msvc 19.26 (/O2).
+コンパイラと最適化フラグ: gcc 8.1 (-O3)、clang 12.0 (-O3)、msvc 19.26 (/O2)。
 
-== Parsing
+== 解析
 
-=== Parse apache_builds.json
+=== apache_builds.jsonの解析
 image::images/parse_apache_builds.png[width=668,height=712]
 
-=== Parse canada.json
+=== canada.jsonの解析
 image::images/parse_canada.png[width=668,height=712]
 
-=== Parse citm_catalog.json
+=== citm_catalog.jsonの解析
 image::images/parse_citm_catalog.png[width=668,height=712px]
 
-=== Parse github_events.json
+=== github_events.jsonの解析
 image::images/parse_github_events.png[width=668,height=712]
 
-=== Parse gsoc-2018.json
+=== gsoc-2018.jsonの解析
 image::images/parse_gsoc_2018.png[width=668,height=712]
 
-=== Parse instruments.json
+=== instruments.jsonの解析
 image::images/parse_instruments.png[width=668,height=712]
 
-=== Parse marine_ik.json
+=== marine_ik.jsonの解析
 image::images/parse_marine_ik.png[width=668,height=712]
 
-=== Parse mesh.json
+=== mesh.jsonの解析
 image::images/parse_mesh.png[width=668,height=712]
 
-=== Parse mesh.pretty.json
+=== mesh.pretty.jsonの解析
 image::images/parse_mesh_pretty.png[width=668,height=712]
 
-=== Parse numbers.json
+=== numbers.jsonの解析
 image::images/parse_numbers.png[width=668,height=712]
 
-=== Parse random.json
+=== random.jsonの解析
 image::images/parse_random.png[width=668,height=712]
 
-=== Parse twitter.json
+=== twitter.jsonの解析
 image::images/parse_twitter.png[width=668,height=712]
 
-=== Parse twitterescaped.json
+=== twitterescaped.jsonの解析
 image::images/parse_twitterescaped.png[width=668,height=712]
 
-=== Parse update-center.json
+=== update-center.jsonの解析
 image::images/parse_update_center.png[width=668,height=712]
 
-== Serialization
+== シリアライゼーション
 
-=== Serialize canada.json
+=== canada.jsonのシリアライゼーション
 image::images/serialize_canada.png[width=668,height=712]
 
-=== Serialize citm_catalog.json
+=== citm_catalog.jsonのシリアライゼーション
 image::images/serialize_citm_catalog.png[width=668,height=712]
 
-=== Serialize github_events.json
+=== github_events.jsonのシリアライゼーション
 image::images/serialize_github_events.png[width=668,height=712]
 
-=== Serialize gsoc-2018.json
+=== gsoc-2018.jsonのシリアライゼーション
 image::images/serialize_gsoc_2018.png[width=668,height=712]
 
-=== Serialize instruments.json
+=== instruments.jsonのシリアライゼーション
 image::images/serialize_instruments.png[width=668,height=712]
 
-=== Serialize marine_ik.json
+=== marine_ik.jsonのシリアライゼーション
 image::images/serialize_marine_ik.png[width=668,height=712]
 
-=== Serialize mesh.json
+=== mesh.jsonのシリアライゼーション
 image::images/serialize_mesh.png[width=668,height=712]
 
-=== Serialize mesh.pretty.json
+=== mesh.pretty.jsonのシリアライゼーション
 image::images/serialize_mesh_pretty.png[width=668,height=712]
 
-=== Serialize numbers.json
+=== numbers.jsonのシリアライゼーション
 image::images/serialize_numbers.png[width=668,height=712]
 
-=== Serialize random.json
+=== random.jsonのシリアライゼーション
 image::images/serialize_random.png[width=668,height=712]
 
-=== Serialize twitter.json
+=== twitter.jsonのシリアライゼーション
 image::images/serialize_twitter.png[width=668,height=712]
 
-=== Serialize twitterescaped.json
+=== twitterescaped.jsonのシリアライゼーション
 image::images/serialize_twitterescaped.png[width=668,height=712]
 
-=== Serialize update-center.json
+=== update-center.jsonのシリアライゼーション
 image::images/serialize_update_center.png[width=668,height=712px]
