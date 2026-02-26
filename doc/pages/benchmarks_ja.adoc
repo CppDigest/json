@@ -1,0 +1,188 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+[pagelevels=1,toclevels=1]
+= ベンチマーク
+このセクションでは、Boost.JSONのパフォーマンスを、2つの広く使われている類似機能のライブラリと比較します：パフォーマンスで知られるRapidJSONと、機能豊富さで知られるJSON for Modern C++です。ベンチプログラムは、典型的なワークロードを表すJSONのセットの解析とシリアライゼーションのスループットを測定します。以下の実装が評価されます：
+
+.実装
+|===
+|名前e|説明
+
+| *boost(pool)*
+| 入力は<<ref_monotonic_resource>>を使用して解析されます。これは、後続の変更なしの解析に最適化されています。<<ref_stream_parser>>オブジェクトは試行間で再利用され、実装によって割り当てられた一時メモリが保持され、パフォーマンスが向上します。
+
+| *boost*
+| 入力は<<default_memory_resource, デフォルトメモリリソース>>を使用して解析されます。これは標準C++アロケータを使用し、解析後のドキュメントの変更を含む一般的な使用のために設計されています。<<ref_stream_parser>>オブジェクトは試行間で再利用され、実装によって割り当てられた一時メモリが保持され、パフォーマンスが向上します。
+
+| *rapidjson(pool)*
+| 入力はhttps://rapidjson.org/classrapidjson_1_1_memory_pool_allocator.html[`MemoryPoolAllocator`]のインスタンスを使用して解析されます。これは、後続の変更なしの解析に最適化されています。一時メモリを保持するhttps://rapidjson.org/classrapidjson_1_1_generic_document.html[`Document`]オブジェクトは試行間で再利用されません。そうしないとメモリ消費量が際限なく増加し、ベンチマークが無効になります。
+
+| *rapidjson*
+| 入力はhttps://rapidjson.org/classrapidjson_1_1_crt_allocator.html[`CrtAllocator`]のインスタンスを使用して解析されます。これは標準C++アロケータを使用し、解析後のドキュメントの変更を含む一般的な使用のために設計されています。一時メモリを保持するhttps://rapidjson.org/classrapidjson_1_1_generic_document.html[`Document`]オブジェクトは試行間で再利用されません。そうしないとメモリ消費量が際限なく増加し、ベンチマークが無効になります。
+
+| *nlohmann*
+| 入力は静的メンバ関数https://nlohmann.github.io/json/classnlohmann_1_1basic__json_ab330c13ba254ea41fbc1c52c5c610f45.html[`json::parse`]を使用して解析されます。これはデフォルトの`std`アロケータを使用し、解析後のドキュメントの変更を含む一般的な使用のために設計されています。このライブラリは、解析やシリアライゼーションで使用した一時ストレージを後続の操作で再利用するためのインターフェースを提供しません。
+|===
+
+== 方法論
+入力ファイルは最初にすべてロードされます。次に、各設定について、少なくとも5秒間続く十分な試行回数で実行されます。経過時間、呼び出し回数（解析またはシリアライゼーション）、転送されたバイト数がサンプルとして出力され、メガバイト/秒で表されるスループットの計算とともに記録されます。各設定について複数のサンプル（現在は5つ）が生成されます。中央値の2つのサンプルを除くすべてが破棄され、残りのサンプルを平均して1つの数値とし、ベンチマーク結果として報告されます。
+
+入力ファイルは、bench/dataディレクトリにあり、以下のように配置されています：
+
+.入力ファイル
+|===
+|名前e|サイズe|説明
+
+| <<parse_apache_builds_json,*apache_builds.json*>>
+| 125KB
+| Apache Jenkinsインストールからのデータ。
+
+| <<parse_canada_json,*canada.json*>>
+| 2.2MB
+| 最大のファイルで、浮動小数点座標ペアを保持する2要素配列が多数含まれています。
+
+| <<parse_citm_catalog_json,*citm_catalog.json*>>
+| 1.69MB
+| 様々なネスト、型、長さを持つ大きなJSON。
+
+| <<parse_github_events_json,*github_events.json*>>
+| 64KB
+| Github Events APIからのデータエクスポート。
+
+| <<parse_gsoc_2018_json,*gsoc-2018.json*>>
+| 3.25MB
+| Google Summer of Code 2018のデータ。
+
+| <<parse_instruments_json,*instruments.json*>>
+| 216KB
+| 大きなオブジェクトの配列。
+
+| <<parse_marine_ik_json,*marine_ik.json*>>
+| 2.91MB
+| three.jsのサンプルモデルをJSONにシリアライズしたもの。
+
+| <<parse_mesh_json,*mesh.json*>>
+| 707KB
+| 3Dメッシュを表すJSON。多くの浮動小数点数を含みます。
+
+| <<parse_mesh_pretty_json,*mesh.pretty.json*>>
+| 1.54MB
+| 空白を追加したmesh.json。
+
+| <<parse_numbers_json,*numbers.json*>>
+| 147KB
+| 浮動小数点数だけを含む配列。
+
+| <<parse_random_json,*random.json*>>
+| 499KB
+| キリル文字が多数含まれるJSON。
+
+| <<parse_twitter_json,*twitter.json*>>
+| 617KB
+| TwitterのAPIからのデータエクスポート。
+
+| <<parse_twitterescaped_json,*twitterescaped.json*>>
+| 550KB
+| 空白を削除し、非ASCII文字をUnicodeエスケープに置き換えたtwitter.json。
+
+| <<parse_update_center_json,*update-center.json*>>
+| 521KB
+| TwitterのAPIからのデータエクスポート。
+|===
+
+テストに使用したハードウェア: **Intel(R) Core(TM) i7-7700K CPU @ 4.20GHz**、Windows 10、32GB RAM。
+
+コンパイラと最適化フラグ: gcc 8.1 (-O3)、clang 12.0 (-O3)、msvc 19.26 (/O2)。
+
+== 解析
+
+=== apache_builds.jsonの解析
+image::images/parse_apache_builds.png[width=668,height=712]
+
+=== canada.jsonの解析
+image::images/parse_canada.png[width=668,height=712]
+
+=== citm_catalog.jsonの解析
+image::images/parse_citm_catalog.png[width=668,height=712px]
+
+=== github_events.jsonの解析
+image::images/parse_github_events.png[width=668,height=712]
+
+=== gsoc-2018.jsonの解析
+image::images/parse_gsoc_2018.png[width=668,height=712]
+
+=== instruments.jsonの解析
+image::images/parse_instruments.png[width=668,height=712]
+
+=== marine_ik.jsonの解析
+image::images/parse_marine_ik.png[width=668,height=712]
+
+=== mesh.jsonの解析
+image::images/parse_mesh.png[width=668,height=712]
+
+=== mesh.pretty.jsonの解析
+image::images/parse_mesh_pretty.png[width=668,height=712]
+
+=== numbers.jsonの解析
+image::images/parse_numbers.png[width=668,height=712]
+
+=== random.jsonの解析
+image::images/parse_random.png[width=668,height=712]
+
+=== twitter.jsonの解析
+image::images/parse_twitter.png[width=668,height=712]
+
+=== twitterescaped.jsonの解析
+image::images/parse_twitterescaped.png[width=668,height=712]
+
+=== update-center.jsonの解析
+image::images/parse_update_center.png[width=668,height=712]
+
+== シリアライゼーション
+
+=== canada.jsonのシリアライゼーション
+image::images/serialize_canada.png[width=668,height=712]
+
+=== citm_catalog.jsonのシリアライゼーション
+image::images/serialize_citm_catalog.png[width=668,height=712]
+
+=== github_events.jsonのシリアライゼーション
+image::images/serialize_github_events.png[width=668,height=712]
+
+=== gsoc-2018.jsonのシリアライゼーション
+image::images/serialize_gsoc_2018.png[width=668,height=712]
+
+=== instruments.jsonのシリアライゼーション
+image::images/serialize_instruments.png[width=668,height=712]
+
+=== marine_ik.jsonのシリアライゼーション
+image::images/serialize_marine_ik.png[width=668,height=712]
+
+=== mesh.jsonのシリアライゼーション
+image::images/serialize_mesh.png[width=668,height=712]
+
+=== mesh.pretty.jsonのシリアライゼーション
+image::images/serialize_mesh_pretty.png[width=668,height=712]
+
+=== numbers.jsonのシリアライゼーション
+image::images/serialize_numbers.png[width=668,height=712]
+
+=== random.jsonのシリアライゼーション
+image::images/serialize_random.png[width=668,height=712]
+
+=== twitter.jsonのシリアライゼーション
+image::images/serialize_twitter.png[width=668,height=712]
+
+=== twitterescaped.jsonのシリアライゼーション
+image::images/serialize_twitterescaped.png[width=668,height=712]
+
+=== update-center.jsonのシリアライゼーション
+image::images/serialize_update_center.png[width=668,height=712px]
