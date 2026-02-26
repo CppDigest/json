@@ -1,0 +1,122 @@
+https://www.boost.org/doc/libs/release/libs/json/[image:https://raw.githubusercontent.com/CPPAlliance/json/master/doc/images/repo-logo-3.png[Boost.JSON]]
+
+[width="100%", cols="12%,43%,45%", options="header"]
+|===
+|分支 |https://github.com/boostorg/json/tree/master[`master`]
+|https://github.com/boostorg/json/tree/develop[`develop`]
+|https://azure.microsoft.com/en-us/services/devops/pipelines/[Azure]
+|https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=5&branchName=master[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/master[构建状态]]
+|https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=8&branchName=develop[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/develop[构建状态]]
+
+|文档
+|https://www.boost.org/doc/libs/master/libs/json/[image:https://img.shields.io/badge/docs-master-brightgreen.svg[文档]]
+|https://www.boost.org/doc/libs/develop/libs/json/[image:https://img.shields.io/badge/docs-develop-brightgreen.svg[文档]]
+
+|https://drone.io/[Drone]
+|https://drone.cpp.al/boostorg/json[image:https://drone.cpp.al/api/badges/boostorg/json/status.svg?ref=refs/heads/master[构建状态]]
+|https://drone.cpp.al/boostorg/json[image:https://drone.cpp.al/api/badges/boostorg/json/status.svg?ref=refs/heads/develop[构建状态]]
+
+|矩阵
+|http://www.boost.org/development/tests/master/developer/json.html[image:https://img.shields.io/badge/matrix-master-brightgreen.svg[矩阵]]
+|http://www.boost.org/development/tests/develop/developer/json.html[image:https://img.shields.io/badge/matrix-develop-brightgreen.svg[矩阵]]
+
+|模糊测试 |—
+|https://github.com/boostorg/json/actions?query=workflow%3Afuzz+branch%3Adevelop[image:https://github.com/boostorg/json/workflows/fuzz/badge.svg?branch=develop[模糊测试]]
+
+|https://ci.appveyor.com/[Appveyor]
+|https://ci.appveyor.com/project/vinniefalco/cppalliance-json/branch/master[image:https://ci.appveyor.com/api/projects/status/8csswcnmfm798203?branch=master&svg=true[构建状态]]
+|https://ci.appveyor.com/project/vinniefalco/cppalliance-json/branch/develop[image:https://ci.appveyor.com/api/projects/status/8csswcnmfm798203?branch=develop&svg=true[构建状态]]
+
+|https://codecov.io[codecov.io]
+|https://codecov.io/gh/boostorg/json/branch/master[image:https://codecov.io/gh/boostorg/json/branch/master/graph/badge.svg[codecov]]
+|https://codecov.io/gh/boostorg/json/branch/develop[image:https://codecov.io/gh/boostorg/json/branch/develop/graph/badge.svg[codecov]]
+|===
+
+== Boost.JSON
+
+=== 概述
+
+Boost.JSON 是一个可移植的 C++ 库，提供实现 https://json.org/[JavaScript 对象表示法]（简称 JSON）的容器和算法。JSON 是一种轻量级的数据交换格式，易于人阅读和编写，也易于机器解析和生成。它基于 JavaScript 编程语言（https://www.ecma-international.org/ecma-262/10.0/index.html[标准 ECMA-262]）的一个子集，目前已在 https://datatracker.ietf.org/doc/html/rfc8259[RFC 8259] 中标准化。JSON 是一种独立于语言的文本格式，但使用了 C 语言家族（包括 C、C++、C#、Java、JavaScript、Perl、Python 等）程序员熟悉的约定。这些特性使 JSON 成为理想的数据交换语言。
+
+该库专注于一个常见且流行的用例：解析和序列化到一个名为 `value` 的容器，该容器持有 JSON 类型。您构建的任何 `value` 都可以被序列化然后反序列化，保证结果与原始值相等。使用该库生成的任何 JSON 输出均可被大多数常见编程语言的 JSON 实现读取。
+
+`value` 容器设计为非常适合作为公共接口和库中使用的词汇类型，允许它们组合。该库将可表示的数据类型限制在几乎所有 JSON 实现（尤其是 JavaScript）普遍接受的范围内。解析器和序列化器都具有高性能，达到或超过最佳同类库的基准性能。分配器得到良好支持。使用这些类型的代码将易于理解、灵活且高效。
+
+Boost.JSON 提供以下特性：
+
+* 快速编译
+* 仅需 C++11
+* 快速流式解析器和序列化器
+* 对象的常量时间键查找
+* 允许非标准 JSON 的选项
+* 易于使用且安全的现代 API，支持分配器
+* 可选的仅头文件模式，无需链接库
+
+访问 https://boost.org/libs/json 获取完整文档。
+
+=== 要求
+
+* 仅需 C++11
+* 链接到已构建的静态或动态 Boost 库，或使用仅头文件模式（见下文）
+* 支持 -fno-exceptions，自动检测
+
+该库在其接口中大量依赖以下众所周知的 C++ 类型（以下称为_标准类型_）：
+
+* `string_view`
+* `memory_resource`, `polymorphic_allocator`
+* `error_category`, `error_code`, `error_condition`, `system_error`
+
+==== 仅头文件模式
+
+要使用仅头文件模式（即消除将程序链接到静态或动态 Boost.JSON 库的要求），只需在项目中一个新建或现有源文件中添加以下行：
+
+....
+#include <boost/json/src.hpp>
+....
+
+MSVC 用户还必须定义宏 `BOOST_JSON_NO_LIB` 以禁用自动链接。
+
+==== 嵌入式
+
+Boost.JSON 在嵌入式设备上表现优异。该库使用本地栈缓冲区来提高某些操作的性能。在 Intel 平台上这些缓冲区较大（4KB），而在非 Intel 平台上则较小（256 字节）。要为嵌入式应用程序调整栈缓冲区大小，请在构建库或包含函数定义时定义此宏：
+
+....
+#define BOOST_JSON_STACK_BUFFER_SIZE 1024
+#include <boost/json/src.hpp>
+....
+
+==== 支持的编译器
+
+Boost.JSON 已在以下编译器上通过测试：
+
+* clang: 3.5, 3.6, 3.7, 3.8, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+* gcc: 4.8, 4.9, 5, 6, 7, 8, 9, 10, 11, 12
+* msvc: 14.0, 14.1, 14.2, 14.3
+
+==== 支持的 JSON 文本
+
+该库要求输入文本使用 UTF-8 编码，这是 https://datatracker.ietf.org/doc/html/rfc8259#section-8.1[RFC] 对所有系统间交换的 JSON 提出的要求。同样地，该库生成的文本也是有效的 UTF-8。
+
+RFC 不允许字节顺序标记（BOM）出现在 JSON 文本中，因此该库将 BOM 视为语法错误。
+
+该库支持几种流行的 JSON 扩展。这些扩展需要显式启用。
+
+==== Visual Studio 解决方案
+
+....
+cmake -G "Visual Studio 16 2019" -A Win32 -B bin -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/msvc.cmake
+cmake -G "Visual Studio 16 2019" -A x64 -B bin64 -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/msvc.cmake
+....
+
+=== 质量保证
+
+该库的开发基础设施包含以下每次提交的分析：
+
+* 覆盖率报告
+* 基准性能比较
+* 在 Drone.io、Azure Pipelines、Appveyor 上进行编译和测试
+* 使用 clang-llvm 和机器学习进行模糊测试
+
+=== 许可证
+
+根据 Boost 软件许可证 1.0 版分发。（请参阅随附的 LICENSE_1_0.txt 文件或在 https://www.boost.org/LICENSE_1_0.txt 复制）
