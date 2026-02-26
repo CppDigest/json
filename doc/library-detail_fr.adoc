@@ -2,36 +2,30 @@ https://www.boost.org/doc/libs/release/libs/json/[image:https://raw.githubuserco
 
 [width="100%", cols="12%,43%,45%", options="header"]
 |===
-|Branch |https://github.com/boostorg/json/tree/master[`master`]
+|Branche |https://github.com/boostorg/json/tree/master[`master`]
 |https://github.com/boostorg/json/tree/develop[`develop`]
 |https://azure.microsoft.com/en-us/services/devops/pipelines/[Azure]
-|https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=5&branchName=master[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/master[Build
-Status]]
-|https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=8&branchName=develop[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/develop[Build
-Status]]
+|https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=5&branchName=master[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/master[Statut de la compilation]]
+|https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=8&branchName=develop[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/develop[Statut de la compilation]]
 
-|Docs
+|Documentation
 |https://www.boost.org/doc/libs/master/libs/json/[image:https://img.shields.io/badge/docs-master-brightgreen.svg[Documentation]]
 |https://www.boost.org/doc/libs/develop/libs/json/[image:https://img.shields.io/badge/docs-develop-brightgreen.svg[Documentation]]
 
 |https://drone.io/[Drone]
-|https://drone.cpp.al/boostorg/json[image:https://drone.cpp.al/api/badges/boostorg/json/status.svg?ref=refs/heads/master[Build
-Status]]
-|https://drone.cpp.al/boostorg/json[image:https://drone.cpp.al/api/badges/boostorg/json/status.svg?ref=refs/heads/develop[Build
-Status]]
+|https://drone.cpp.al/boostorg/json[image:https://drone.cpp.al/api/badges/boostorg/json/status.svg?ref=refs/heads/master[Statut de la compilation]]
+|https://drone.cpp.al/boostorg/json[image:https://drone.cpp.al/api/badges/boostorg/json/status.svg?ref=refs/heads/develop[Statut de la compilation]]
 
-|Matrix
-|http://www.boost.org/development/tests/master/developer/json.html[image:https://img.shields.io/badge/matrix-master-brightgreen.svg[Matrix]]
-|http://www.boost.org/development/tests/develop/developer/json.html[image:https://img.shields.io/badge/matrix-develop-brightgreen.svg[Matrix]]
+|Matrice
+|http://www.boost.org/development/tests/master/developer/json.html[image:https://img.shields.io/badge/matrix-master-brightgreen.svg[Matrice]]
+|http://www.boost.org/development/tests/develop/developer/json.html[image:https://img.shields.io/badge/matrix-develop-brightgreen.svg[Matrice]]
 
 |Fuzzing |—
 |https://github.com/boostorg/json/actions?query=workflow%3Afuzz+branch%3Adevelop[image:https://github.com/boostorg/json/workflows/fuzz/badge.svg?branch=develop[fuzz]]
 
 |https://ci.appveyor.com/[Appveyor]
-|https://ci.appveyor.com/project/vinniefalco/cppalliance-json/branch/master[image:https://ci.appveyor.com/api/projects/status/8csswcnmfm798203?branch=master&svg=true[Build
-status]]
-|https://ci.appveyor.com/project/vinniefalco/cppalliance-json/branch/develop[image:https://ci.appveyor.com/api/projects/status/8csswcnmfm798203?branch=develop&svg=true[Build
-status]]
+|https://ci.appveyor.com/project/vinniefalco/cppalliance-json/branch/master[image:https://ci.appveyor.com/api/projects/status/8csswcnmfm798203?branch=master&svg=true[Statut de la compilation]]
+|https://ci.appveyor.com/project/vinniefalco/cppalliance-json/branch/develop[image:https://ci.appveyor.com/api/projects/status/8csswcnmfm798203?branch=develop&svg=true[Statut de la compilation]]
 
 |https://codecov.io[codecov.io]
 |https://codecov.io/gh/boostorg/json/branch/master[image:https://codecov.io/gh/boostorg/json/branch/master/graph/badge.svg[codecov]]
@@ -40,35 +34,35 @@ status]]
 
 == Boost.JSON
 
-=== Overview
+=== Vue d'ensemble
 
-Update to 1.90.0
+Mise à jour vers la version 1.90.0
 
-Boost.JSON is a portable C++ library which provides containers and algorithms that implement https://json.org/[JavaScript Object Notation], or simply ``JSON'', a lightweight data-interchange format. This format is easy for humans to read and write, and easy for machines to parse and generate. It is based on a subset of the JavaScript Programming Language (https://www.ecma-international.org/ecma-262/10.0/index.html[Standard ECMA-262]), and is currently standardised in https://datatracker.ietf.org/doc/html/rfc8259[RFC 8259]. JSON is a text format that is language-independent but uses conventions that are familiar to programmers of the C-family of languages, including C, C++, C#, Java, JavaScript, Perl, Python, and many others. These properties make JSON an ideal data-interchange language.
+Boost.JSON est une bibliothèque portable C++ qui fournit des conteneurs et des algorithmes implémentant https://json.org/[JavaScript Object Notation], ou simplement ``JSON'', un format léger d'échange de données. Ce format est facile à lire et à écrire pour les humains, et facile à analyser et à générer pour les machines. Il est basé sur un sous-ensemble du langage de programmation JavaScript (https://www.ecma-international.org/ecma-262/10.0/index.html[Standard ECMA-262]), et est actuellement standardisé dans le https://datatracker.ietf.org/doc/html/rfc8259[RFC 8259]. JSON est un format texte indépendant du langage mais utilise des conventions familières aux programmeurs des langages de la famille C, notamment C, C++, C#, Java, JavaScript, Perl, Python et bien d'autres. Ces propriétés font de JSON un langage d'échange de données idéal.
 
-This library focuses on a common and popular use-case: parsing and serializing to and from a container called `value` which holds JSON types. Any `value` which you build can be serialized and then deserialized, guaranteeing that the result will be equal to the original value. Whatever JSON output you produce with this library will be readable by most common JSON implementations in any language.
+Cette bibliothèque se concentre sur un cas d'utilisation courant et populaire : l'analyse et la sérialisation vers et depuis un conteneur appelé `value` qui contient des types JSON. Tout `value` que vous construisez peut être sérialisé puis désérialisé, garantissant que le résultat sera égal à la valeur d'origine. Toute sortie JSON que vous produisez avec cette bibliothèque sera lisible par la plupart des implémentations JSON courantes dans n'importe quel langage.
 
-The `value` container is designed to be well suited as a vocabulary type appropriate for use in public interfaces and libraries, allowing them to be composed. The library restricts the representable data types to the ranges which are almost universally accepted by most JSON implementations, especially JavaScript. The parser and serializer are both highly performant, meeting or exceeding the benchmark performance of the best comparable libraries. Allocators are very well supported. Code which uses these types will be easy to understand, flexible, and performant.
+Le conteneur `value` est conçu pour être bien adapté comme un type de vocabulaire approprié pour une utilisation dans les interfaces publiques et les bibliothèques, permettant leur composition. La bibliothèque restreint les types de données représentables aux plages qui sont presque universellement acceptées par la plupart des implémentations JSON, en particulier JavaScript. L'analyseur et le sérialiseur sont tous deux très performants, atteignant ou dépassant les performances de référence des meilleures bibliothèques comparables. Les allocateurs sont très bien pris en charge. Le code qui utilise ces types sera facile à comprendre, flexible et performant.
 
-Boost.JSON offers these features:
+Boost.JSON offre ces fonctionnalités :
 
-* Fast compilation
-* Require only C++11
-* Fast streaming parser and serializer
-* Constant-time key lookup for objects
-* Options to allow non-standard JSON
-* Easy and safe modern API with allocator support
-* Optional header-only, without linking to a library
+* Compilation rapide
+* Nécessite uniquement C++11
+* Analyseur et sérialiseur rapides en streaming
+* Recherche de clé en temps constant pour les objets
+* Options pour autoriser le JSON non standard
+* API moderne facile et sûre avec prise en charge des allocateurs
+* Option header-only, sans liaison à une bibliothèque
 
-Visit https://boost.org/libs/json for complete documentation.
+Visitez https://boost.org/libs/json pour une documentation complète.
 
-=== Requirements
+=== Exigences
 
-* Requires only C++11
-* Link to a built static or dynamic Boost library, or use header-only (see below)
-* Supports -fno-exceptions, detected automatically
+* Nécessite uniquement C++11
+* Lien vers une bibliothèque Boost statique ou dynamique construite, ou utilisation header-only (voir ci-dessous)
+* Prend en charge -fno-exceptions, détecté automatiquement
 
-The library relies heavily on these well known C++ types in its interfaces (henceforth termed _standard types_):
+La bibliothèque s'appuie fortement sur ces types C++ bien connus dans ses interfaces (désormais appelés _types standard_) :
 
 * `string_view`
 * `memory_resource`, `polymorphic_allocator`
@@ -76,55 +70,55 @@ The library relies heavily on these well known C++ types in its interfaces (henc
 
 ==== Header-Only
 
-To use as header-only; that is, to eliminate the requirement to link a program to a static or dynamic Boost.JSON library, simply place the following line in exactly one new or existing source file in your project.
+Pour utiliser en header-only ; c'est-à-dire pour éliminer l'exigence de lier un programme à une bibliothèque Boost.JSON statique ou dynamique, placez simplement la ligne suivante dans exactement un nouveau ou existant fichier source de votre projet.
 
 ....
 #include <boost/json/src.hpp>
 ....
 
-MSVC users must also define the macro `BOOST_JSON_NO_LIB` to disable auto-linking.
+Les utilisateurs de MSVC doivent également définir la macro `BOOST_JSON_NO_LIB` pour désactiver l'auto-liaison.
 
-==== Embedded
+==== Embarqué
 
-Boost.JSON works great on embedded devices. The library uses local stack buffers to increase the performance of some operations. On Intel platforms these buffers are large (4KB), while on non-Intel platforms they are small (256 bytes). To adjust the size of the stack buffers for embedded applications define this macro when building the library or including the function definitions:
+Boost.JSON fonctionne parfaitement sur les appareils embarqués. La bibliothèque utilise des tampons de pile locaux pour améliorer les performances de certaines opérations. Sur les plateformes Intel, ces tampons sont grands (4 Ko), tandis que sur les plateformes non Intel, ils sont petits (256 octets). Pour ajuster la taille des tampons de pile pour les applications embarquées, définissez cette macro lors de la construction de la bibliothèque ou de l'inclusion des définitions de fonctions :
 
 ....
 #define BOOST_JSON_STACK_BUFFER_SIZE 1024
 #include <boost/json/src.hpp>
 ....
 
-==== Supported Compilers
+==== Compilateurs pris en charge
 
-Boost.JSON has been tested with the following compilers:
+Boost.JSON a été testé avec les compilateurs suivants :
 
-* clang: 3.5, 3.6, 3.7, 3.8, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
-* gcc: 4.8, 4.9, 5, 6, 7, 8, 9, 10, 11, 12
-* msvc: 14.0, 14.1, 14.2, 14.3
+* clang : 3.5, 3.6, 3.7, 3.8, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+* gcc : 4.8, 4.9, 5, 6, 7, 8, 9, 10, 11, 12
+* msvc : 14.0, 14.1, 14.2, 14.3
 
-==== Supported JSON Text
+==== Texte JSON pris en charge
 
-The library expects input text to be encoded using UTF-8, which is a requirement put on all JSON exchanged between systems by the https://datatracker.ietf.org/doc/html/rfc8259#section-8.1[RFC]. Similarly, the text generated by the library is valid UTF-8.
+La bibliothèque attend que le texte d'entrée soit encodé en UTF-8, ce qui est une exigence imposée à tout JSON échangé entre systèmes par le https://datatracker.ietf.org/doc/html/rfc8259#section-8.1[RFC]. De même, le texte généré par la bibliothèque est un UTF-8 valide.
 
-The RFC does not allow byte order marks (BOM) to appear in JSON text, so the library considers BOM syntax errors.
+La RFC n'autorise pas les marques d'ordre d'octet (BOM) dans le texte JSON, donc la bibliothèque considère les BOM comme des erreurs de syntaxe.
 
-The library supports several popular JSON extensions. These have to be explicitly enabled.
+La bibliothèque prend en charge plusieurs extensions JSON populaires. Celles-ci doivent être explicitement activées.
 
-==== Visual Studio Solution
+==== Solution Visual Studio
 
 ....
 cmake -G "Visual Studio 16 2019" -A Win32 -B bin -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/msvc.cmake
 cmake -G "Visual Studio 16 2019" -A x64 -B bin64 -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/msvc.cmake
 ....
 
-=== Quality Assurance
+=== Assurance qualité
 
-The development infrastructure for the library includes these per-commit analyses:
+L'infrastructure de développement de la bibliothèque inclut ces analyses par commit :
 
-* Coverage reports
-* Benchmark performance comparisons
-* Compilation and tests on Drone.io, Azure Pipelines, Appveyor
-* Fuzzing using clang-llvm and machine learning
+* Rapports de couverture
+* Comparaisons de performances de référence
+* Compilation et tests sur Drone.io, Azure Pipelines, Appveyor
+* Fuzzing avec clang-llvm et apprentissage automatique
 
-=== License
+=== Licence
 
-Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt)
+Distribué sous la licence Boost Software License, Version 1.0. (Voir le fichier accompagnant LICENSE_1_0.txt ou copie à l'adresse https://www.boost.org/LICENSE_1_0.txt)
