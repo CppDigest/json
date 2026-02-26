@@ -8,13 +8,13 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [#ref, pagelevels=3,toclevels=1]
-= Reference
+= Справочник
 
 [cols=4*a,autowidth]
 |===
 4+|JSON
 
-a| *Classes* +
+a| *Классы* +
 <<ref_array>> +
 <<ref_basic_parser>> +
 <<ref_key_value_pair>> +
@@ -33,7 +33,7 @@ a| *Classes* +
 <<ref_value_ref>> +
 <<ref_value_stack>>
 
-a| *Functions* +
+a| *Функции* +
 <<ref_get>> +
 <<ref_get_null_resource>> +
 <<ref_make_shared_resource>> +
@@ -52,7 +52,7 @@ a| *Functions* +
 <<ref_pilfered>> +
 <<ref_is_pilfer_constructible>>
 
-| *Operators* +
+| *Операторы* +
 <<ref_operator_eq_eq>> +
 <<ref_operator_not_eq>> +
 <<ref_operator_gt>> +
@@ -61,11 +61,11 @@ a| *Functions* +
 <<ref_operator_lt_eq>> +
 <<ref_operator_lt_lt>> +
 
-*Aliases* +
+*Псевдонимы* +
 <<ref_parser_for>> +
 <<ref_string_view>>
 
-*Constants* +
+*Константы* +
 <<ref_array_kind>> +
 <<ref_condition>> +
 <<ref_error>> +
@@ -74,7 +74,7 @@ a| *Functions* +
 <<ref_object_kind>> +
 <<ref_string_kind>>
 
-| *Type Traits* +
+| *Типовые свойства* +
 <<ref_has_value_from>> +
 <<ref_has_value_to>> +
 <<ref_is_deallocate_trivial>> +
