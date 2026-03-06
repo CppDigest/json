@@ -1,0 +1,20 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+[#input_output,pagelevels=2]
+= 输入/输出
+该库提供了解析和序列化算法，用于根据需要将 JSON 与 &lt;<ref_value>&gt; 容器相互转换。这是通过自由函数和类实现的，具体描述如下。</ref_value>
+
+:leveloffset: +1
+
+include::parsing.adoc[]
+include::serializing.adoc[]
+
+:leveloffset: -1
