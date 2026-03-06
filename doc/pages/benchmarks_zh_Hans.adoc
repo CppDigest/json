@@ -9,7 +9,7 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [pagelevels=1,toclevels=1]
-= Benchmarks This section compares the performance of Boost.JSON with two widely used libraries with similar functionality: RapidJSON which is known for its performance, and JSON for Modern C++ which is known for feature-richness. The bench program measures the throughput of parsing and serialization for the a set of JSON representing typical workloads. These implementations are evaluated:
+= 基准测试 本节将Boost.JSON的性能与两个广泛使用的具有类似功能的库进行比较：以性能著称的RapidJSON和以功能丰富著称的现代C++的JSON库（nlohmann）。bench程序测量解析和序列化一组代表典型工作负载的JSON的吞吐量。评估了以下实现：
 
 .Implementations
 |===
@@ -17,28 +17,28 @@ Official repository: https://github.com/boostorg/json
 
 | *boost(pool)*
 | Parses the input using a <<ref_monotonic_resource>>,
-which is optimized for parsing without subsequent modification. The <<ref_stream_parser>> object is reused between trials, allowing temporary memory allocated by the implementation to persist and improve performance.
+该资源针对无需后续修改的解析进行了优化。&lt;<ref_stream_parser>&gt;对象在试验之间重复使用，使得实现分配的临时内存得以保留，从而提高性能。</ref_stream_parser>
 
 | *boost*
 | Parses the input using the <<default_memory_resource, default memory
-resource>>, which uses the standard C++ allocator, and is designed for general use including mutation of the document after it is parsed. The <<ref_stream_parser>> object is reused between trials, allowing temporary memory allocated by the implementation to persist and improve performance.
+&lt;<ref_stream_parser>&gt;对象在试验之间重复使用，使得实现分配的临时内存得以保留，从而提高性能。</ref_stream_parser>
 
 | *rapidjson(pool)*
 | Parses the input using an instance of
-https://rapidjson.org/classrapidjson_1_1_memory_pool_allocator.html[`MemoryPoolAllocator`], which is optimized for parsing without subsequent modification. The https://rapidjson.org/classrapidjson_1_1_generic_document.html[`Document`] object holding temporary memory is not reused between trials, otherwise memory consumption grows without bounds and invalidates the benchmark.
+https://rapidjson.org/classrapidjson_1_1_memory_pool_allocator.html[`MemoryPoolAllocator`]，该分配器针对无需后续修改的解析进行了优化。保存临时内存的https://rapidjson.org/classrapidjson_1_1_generic_document.html[`Document`]对象在试验之间不重复使用，否则内存消耗将无限增长，导致基准测试无效。
 
 | *rapidjson*
 | Parses the input using an instance of
-https://rapidjson.org/classrapidjson_1_1_crt_allocator.html[`CrtAllocator`], which uses the standard C++ allocator, and is designed for general use including mutation of the document after it is parsed. The https://rapidjson.org/classrapidjson_1_1_generic_document.html[`Document`] object holding temporary memory is not reused between trials, otherwise memory consumption grows without bounds and invalidates the benchmark.
+https://rapidjson.org/classrapidjson_1_1_crt_allocator.html[`CrtAllocator`]，该分配器使用标准C++分配器，专为通用用途设计，包括解析后对文档的修改。保存临时内存的https://rapidjson.org/classrapidjson_1_1_generic_document.html[`Document`]对象在试验之间不重复使用，否则内存消耗将无限增长，导致基准测试无效。
 
 | *nlohmann*
 | Parses the input using the static member function
-https://nlohmann.github.io/json/classnlohmann_1_1basic__json_ab330c13ba254ea41fbc1c52c5c610f45.html[`json::parse`], which uses the default `std` allocator, and is designed for general use including mutation of the document after it is parsed. This library does not provide an interface to reuse temporary storage used during parsing or serialization on subsequent operations. |===
+https://nlohmann.github.io/json/classnlohmann_1_1basic__json_ab330c13ba254ea41fbc1c52c5c610f45.html[`json::parse`]，该函数使用默认的`std`分配器，专为通用用途设计，包括解析后对文档的修改。该库未提供接口以在后续操作中重用解析或序列化期间使用的临时存储。|===
 
-== Methodology
-The input files are all loaded first. Then each configuration is run for a sufficient number of trials to last at least 5 seconds. The elapsed time, number of invocations (of parse or serialize), and bytes transferred are emitted as a sample along with a calculation of throughput expressed in megabytes per second. Several samples (currently five) are generated for each configuration. All but the median two samples are discarded, with the remaining samples averaged to produce a single number which is reported as the benchmark result.
+== 方法学
+首先加载所有输入文件。然后，每个配置运行足够多的试验，持续至少5秒。耗时、调用次数（解析或序列化）以及传输的字节数作为样本输出，同时计算以兆字节/秒表示的吞吐量。每个配置生成多个样本（当前为五个）。除中位数的两个样本外，其余样本均被丢弃，剩余样本取平均值后作为基准测试结果报告。
 
-The input files, available in the bench/data directory, are laid out thusly:
+输入文件位于bench/data目录中，其布局如下：
 
 .Input Files
 |===
@@ -51,7 +51,7 @@ The input files, available in the bench/data directory, are laid out thusly:
 | <<parse_canada_json,*canada.json*>>
 | 2.2MB
 | The largest file, containing a large number of 2-element arrays holding
-floating-point coordinate pairs.
+浮点坐标对。
 
 | <<parse_citm_catalog_json,*citm_catalog.json*>>
 | 1.69MB
@@ -96,98 +96,98 @@ floating-point coordinate pairs.
 | <<parse_twitterescaped_json,*twitterescaped.json*>>
 | 550KB
 | twitter.json with whitespace removed and non-ASCII characters replaced with
-Unicode escapes.
+Unicode转义序列。
 
 | <<parse_update_center_json,*update-center.json*>>
 | 521KB
 | An export of data from Twitter's API.
 |===
 
-Hardware used for testing: **Intel(R) Core(TM) i7-7700K CPU @ 4.20GHz**, Windows 10, 32GB RAM.
+测试使用的硬件：**Intel(R) Core(TM) i7-7700K CPU @ 4.20GHz**，Windows 10系统，32GB内存。
 
-Compilers and optimization flags: gcc 8.1 (-O3), clang 12.0 (-O3), and msvc 19.26 (/O2).
+编译器和优化标志：gcc 8.1 (-O3)、clang 12.0 (-O3) 和 msvc 19.26 (/O2)。
 
-== Parsing
+== 解析
 
-=== Parse apache_builds.json
+=== 解析apache_builds.json
 image::images/parse_apache_builds.png[width=668,align="left"]
 
-=== Parse canada.json
+=== 解析canada.json
 image::images/parse_canada.png[width=668,align="left"]
 
-=== Parse citm_catalog.json
+=== 解析citm_catalog.json
 image::images/parse_citm_catalog.png[width=668,align="left"]
 
-=== Parse github_events.json
+=== 解析github_events.json
 image::images/parse_github_events.png[width=668,align="left"]
 
-=== Parse gsoc-2018.json
+=== 解析gsoc-2018.json
 image::images/parse_gsoc_2018.png[width=668,align="left"]
 
-=== Parse instruments.json
+=== 解析instruments.json
 image::images/parse_instruments.png[width=668,align="left"]
 
-=== Parse marine_ik.json
+=== 解析marine_ik.json
 image::images/parse_marine_ik.png[width=668,align="left"]
 
-=== Parse mesh.json
+=== 解析mesh.json
 image::images/parse_mesh.png[width=668,align="left"]
 
-=== Parse mesh.pretty.json
+=== 解析mesh.pretty.json
 image::images/parse_mesh_pretty.png[width=668,align="left"]
 
-=== Parse numbers.json
+=== 解析numbers.json
 image::images/parse_numbers.png[width=668,align="left"]
 
-=== Parse random.json
+=== 解析random.json
 image::images/parse_random.png[width=668,align="left"]
 
-=== Parse twitter.json
+=== 解析twitter.json
 image::images/parse_twitter.png[width=668,align="left"]
 
-=== Parse twitterescaped.json
+=== 解析twitterescaped.json
 image::images/parse_twitterescaped.png[width=668,align="left"]
 
-=== Parse update-center.json
+=== 解析update-center.json
 image::images/parse_update_center.png[width=668,align="left"]
 
-== Serialization
+== 序列化
 
-=== Serialize canada.json
+=== 序列化canada.json
 image::images/serialize_canada.png[width=668,align="left"]
 
-=== Serialize citm_catalog.json
+=== 序列化citm_catalog.json
 image::images/serialize_citm_catalog.png[width=668,align="left"]
 
-=== Serialize github_events.json
+=== 序列化github_events.json
 image::images/serialize_github_events.png[width=668,align="left"]
 
-=== Serialize gsoc-2018.json
+=== 序列化gsoc-2018.json
 image::images/serialize_gsoc_2018.png[width=668,align="left"]
 
-=== Serialize instruments.json
+=== 序列化instruments.json
 image::images/serialize_instruments.png[width=668,align="left"]
 
-=== Serialize marine_ik.json
+=== 序列化marine_ik.json
 image::images/serialize_marine_ik.png[width=668,align="left"]
 
-=== Serialize mesh.json
+=== 序列化mesh.json
 image::images/serialize_mesh.png[width=668,align="left"]
 
-=== Serialize mesh.pretty.json
+=== 序列化mesh.pretty.json
 image::images/serialize_mesh_pretty.png[width=668,align="left"]
 
-=== Serialize numbers.json
+=== 序列化numbers.json
 image::images/serialize_numbers.png[width=668,align="left"]
 
-=== Serialize random.json
+=== 序列化random.json
 image::images/serialize_random.png[width=668,align="left"]
 
-=== Serialize twitter.json
+=== 序列化twitter.json
 image::images/serialize_twitter.png[width=668,align="left"]
 
-=== Serialize twitterescaped.json
+=== 序列化twitterescaped.json
 image::images/serialize_twitterescaped.png[width=668,align="left"]
 
-=== Serialize update-center.json
+=== 序列化update-center.json
 image::images/serialize_update_center.png[width=668,align="left"]
