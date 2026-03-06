@@ -9,14 +9,14 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [pagelevels=1,toclevels=1]
-= Quick Look Here we highlight important features through example code to help convey the style of the interface. We begin by including the library header file which brings all the symbols into scope. Alternatively, individual headers may be included to obtain the declarations for specific types:
+= 快速浏览：我们通过示例代码重点介绍重要特性，以帮助传达接口风格。首先包含库头文件，该文件将所有符号引入作用域。或者，也可以包含单独的头文件以获取特定类型的声明：
 
 [source]
 ----
 #include <boost/json.hpp>
 ----
 
-In order to link your program you will need to link with a built library. Alternatively you can use the header-only configuration simply by including this header file in any __one__ of your new or existing source files:
+为了链接程序，您需要链接到已构建的库。或者，您可以使用仅头文件模式，只需在任意一个源文件（新的或现有的）中包含此头文件：
 
 [source]
 ----
@@ -36,8 +36,8 @@ using namespace boost::json;
 ====
 
 [#quick_look_values]
-== Values
-Say you want to recreate this JSON object in a container:
+== 值
+假设您想在容器中重新创建此JSON对象：
 
 [source,json]
 ----
@@ -57,21 +57,21 @@ Say you want to recreate this JSON object in a container:
 }
 ----
 
-In this library the types <<ref_array>>, <<ref_object>>, and <<ref_string>> hold JSON arrays, objects, and strings respectively while the type <<ref_value>> is a special variant which can hold any JSON element. Here we construct an empty object and then insert the elements above:
+在本库中，类型&lt;<ref_array>&gt;、&lt;<ref_object>&gt;和&lt;<ref_string>&gt;分别用于保存JSON数组、对象和字符串，而类型&lt;<ref_value>&gt;是一种特殊的变体，可保存任何JSON元素。这里我们构造一个空对象，然后插入上述元素：</ref_value></ref_string></ref_object></ref_array>
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_1]
 ----
 
-While keys are strings, the mapped type of objects and the element type of arrays is the aforementioned type <<ref_value>> which can hold any JSON element, as seen in the previous assignments. Instead of building the JSON document using a series of function calls, we can build it in one statement using an initializer list:
+虽然键是字符串，但对象的映射类型和数组的元素类型是前述类型&lt;<ref_value>&gt;，它可以保存任何JSON元素，如之前的赋值所示。我们无需通过一系列函数调用来构建JSON文档，而是可以使用初始化列表通过一条语句构建：</ref_value>
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_2]
 ----
 
-When a <<ref_value>>, <<ref_array>>, or <<ref_object>> is assigned or constructed from an initializer list, the creation of the new value happens only once. This makes initializer lists equally efficient as using the other ways to create a value. The types in this library are first-class, supporting copy and move construction and assignment:
+当&lt;<ref_value>&gt;、&lt;<ref_array>&gt;或&lt;<ref_object>&gt;通过初始化列表赋值或构造时，新值的创建仅发生一次。这使得初始化列表与其他创建值的方式同样高效。本库中的类型是一等的，支持拷贝与移动构造及赋值：</ref_object></ref_array></ref_value>
 
 [source]
 ----
@@ -79,79 +79,79 @@ include::../../test/doc_quick_look.cpp[tag=doc_quick_look_3]
 ----
 
 [#quick_look_allocators]
-== Allocators
-To permit custom memory allocation strategies, these containers all allow construction with a <<ref_storage_ptr>> which is a smart pointer to a {ref_memory_resource}. The constructor signatures have the same ordering as their `std` equivalents which use {req_Allocator} parameters. Once a container is constructed its memory resource can never change. Here we create an array without performing any dynamic allocations:
+== 分配器
+为支持自定义内存分配策略，这些容器都允许通过&lt;<ref_storage_ptr>&gt;（指向{ref_memory_resource}的智能指针）进行构造。其构造函数签名与使用{req_Allocator}参数的`std`对应项具有相同的顺序。容器一旦构造，其内存资源永不改变。这里我们创建一个数组而不执行任何动态内存分配：</ref_storage_ptr>
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_4]
 ----
 
-The containers in this library enforce the invariant that every element of the container will use the same memory resource:
+本库中的容器强制保持以下不变式：容器的每个元素都将使用相同的内存资源：
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_5]
 ----
 
-When a library type is used as the element type of a PMR container; that is, a container which uses a {ref_polymorphic_allocator}, the memory resource will automatically propagate to the type and all of its children:
+当库类型用作PMR容器（即使用{ref_polymorphic_allocator}的容器）的元素类型时，内存资源将自动传播到该类型及其所有子元素：
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_6]
 ----
 
-Up until now we have shown how values may be constructed from a memory resource pointer, where ownership is not transferred. In this case the caller is responsible for ensuring that the lifetime of the resource is extended for the life of the container. Sometimes you want the container to acquire shared ownership of the resource. This is accomplished with <<ref_make_shared_resource>>:
+到目前为止，我们展示了如何通过内存资源指针（不转移所有权）构造值。此时调用方负责确保资源的生命周期延长至容器的生命周期。有时您希望容器获取资源的共享所有权，这可通过&lt;<ref_make_shared_resource>&gt;实现：</ref_make_shared_resource>
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_7]
 ----
 
-A counted memory resource will not be destroyed until every container with shared ownership of the resource is destroyed.
+计数的内存资源直到每个拥有共享所有权的容器被销毁后才会被销毁。
 
 [#quick_look_parsing]
-== Parsing
-JSON can be parsed into the value container in one step using a free function. In the following snippet, a parse error is indicated by a thrown exception:
+== 解析
+可使用自由函数将JSON一步解析到值容器中。在以下代码片段中，解析错误通过抛出异常指示：
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_8]
 ----
 
-Error codes are also possible:
+也可以使用错误码：
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_9]
 ----
 
-By default, the parser is strict and only accepts JSON compliant with the standard. However this behavior can be relaxed by filling out an options structure enabling one or more extensions. Here we use a static buffer and enable two non-standard extensions:
+默认情况下解析器是严格的，仅接受符合标准的JSON。但通过填写选项结构启用一个或多个扩展可放宽此行为。这里我们使用静态缓冲区并启用两个非标准扩展：
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_10]
 ----
 
-The parser in this library implements a https://en.wikipedia.org/wiki/Online_algorithm[__streaming algorithm__]; it can process JSON piece-by-piece, without the requirement that the entire input is available from the start. The parser uses a temporary memory allocation to do its work. If you plan on parsing multiple JSONs, for example in a network server, keeping the same parser instance will allow re-use of this temporary storage, improving performance.
+本库的解析器实现了https://en.wikipedia.org/wiki/Online_algorithm[__流式算法__]；它可逐段处理JSON，无需从一开始就提供完整的输入。解析器使用临时内存分配完成工作。若计划解析多个JSON（例如在网络服务器中），保持相同的解析器实例可重用该临时存储，从而提高性能。
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_11]
 ----
 
-With strategic use of the right memory resources, parser instance, and calculated upper limits on buffer sizes, it is possible to parse and examine JSON without __any__ dynamic memory allocations. This is explored in more detail in a later section.
+通过策略性地使用正确的内存资源、解析器实例及计算缓冲区大小的上限，可以在__没有任何__动态内存分配的情况下解析和检查JSON。这将在后续章节中详细探讨。
 
 [#quick_look_serializing]
-== Serializing
-Simple free functions are provided for serializing a <<ref_value>> to a {std_string} containing JSON:
+== 序列化
+提供简单的自由函数将&lt;<ref_value>&gt;序列化为包含JSON的{std_string}：</ref_value>
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_12]
 ----
 
-The serializer in this library implements a https://en.wikipedia.org/wiki/Online_algorithm[__streaming algorithm__]; it can output JSON a piece at a time, without the requirement that the entire output area is allocated at once:
+本库的序列化器实现了https://en.wikipedia.org/wiki/Online_algorithm[__流式算法__]；它可逐段输出JSON，无需一次性分配整个输出区域：
 
 [source]
 ----
@@ -159,57 +159,57 @@ include::../../test/doc_quick_look.cpp[tag=doc_quick_look_13]
 ----
 
 [#quick_look_conversion]
-== Value Conversion
-Given a user-defined type:
+== 值转换
+给定一个用户自定义类型：
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_14]
 ----
 
-We can define a conversion from the user-defined type to a <<ref_value>> by defining an overload of `tag_invoke` in the same namespace. This maps `customer` to a JSON object:
+我们可在同一命名空间内定义`tag_invoke`的重载，从而定义从用户自定义类型到&lt;<ref_value>&gt;的转换。以下将`customer`映射为JSON对象：</ref_value>
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_15]
 ----
 
-This allows us to use the library function <<ref_value_from>> to produce a <<ref_value>> from our type:
+这允许我们使用库函数&lt;<ref_value_from>&gt;从类型生成&lt;<ref_value>&gt;：</ref_value></ref_value_from>
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_16]
 ----
 
-The library knows what to do with standard containers. Here we convert an array of customers to a value:
+该库知道如何处理标准容器。这里我们将一组客户转换为值：
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_17]
 ----
 
-To go from JSON to a user-defined type we use <<ref_value_to>>, which uses another overload of `tag_invoke`. This converts a JSON value to a `customer`. It throws an exception if the contents of the value do not match what is expected:
+要从JSON转换为用户自定义类型，我们使用&lt;<ref_value_to>&gt;（它使用`tag_invoke`的另一个重载）。以下将JSON值转换为`customer`，若值内容不匹配则抛出异常：</ref_value_to>
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_18]
 ----
 
-The code above defines the convenience function `extract`, which deduces the types of the struct members. This works, but requires that the struct is {req_DefaultConstructible}. An alternative is to construct the object directly, which is a little more verbose but doesn't require default construction:
+上述代码定义了便捷函数`extract`（可推导结构体成员的类型）。这可行但要求结构体是{req_DefaultConstructible}。另一种方法是直接构造对象，稍显冗长但不需要默认构造：
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_19]
 ----
 
-Now we can construct customers from JSON:
+现在我们可以从JSON构造客户：
 
 [source]
 ----
 include::../../test/doc_quick_look.cpp[tag=doc_quick_look_20]
 ----
 
-The library's generic algorithms recognize when you are converting a <<ref_value>> to a container which resembles an array or object, so if you wanted to turn a JSON array into a vector of customers you might write:
+本库的通用算法可识别将&lt;<ref_value>&gt;转换为类似数组或对象的容器的情况，因此若要将JSON数组转换为客户向量，可以这样写：</ref_value>
 
 [source]
 ----
