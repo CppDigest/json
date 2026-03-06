@@ -9,10 +9,12 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [#input_output,pagelevels=2]
-= Input/Output The library provides parsing and serialization algorithms to transform JSON to and from the <<ref_value>> container as needed. This is accomplished through free functions and classes, described as follows.
+= 输入/输出
+该库提供了解析和序列化算法，用于根据需要将 JSON 与 &lt;<ref_value>&gt; 容器相互转换。这是通过自由函数和类实现的，具体描述如下。</ref_value>
 
 :leveloffset: +1
 
-include::parsing.adoc[] include::serializing.adoc[]
+include::parsing.adoc[]
+include::serializing.adoc[]
 
 :leveloffset: -1
