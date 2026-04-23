@@ -7,36 +7,36 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= Custom Conversions
-Boost.JSON uses two mechanisms to customize conversion between <<ref_value>> and user types. One mechanism involves specializing type traits. The other one is more powerful and requires defining overloads of `tag_invoke`. Both mechanisms will be further explained in this section.
+= 自定义转换
+Boost.JSON 提供了两种机制用于自定义 <<ref_value>> 与用户类型之间的转换。一种机制涉及特化类型特征（type traits）。另一种机制更强大，需要定义`tag_invoke`的重载。本节将进一步解释这两种机制。
 
-== Conversion Traits
-Previously a number of conversion type traits, like <<ref_is_tuple_like>> or <<ref_is_sequence_like>>, were introduced. The library tries the traits one after another and uses the implementation that corresponds to the first matching trait. In some cases, though, a type would match a trait with a higher priority, but the user intends for it to belong to a lower priority category. If this happens the user can specialize the trait that's not supposed to match for that type to be an equivalent of `std::false_type`.
+== 转换特征
+之前已经介绍了一些转换类型特征，例如 <<ref_is_tuple_like>> 或 <<ref_is_sequence_like>>。库会依次尝试这些特征，并使用与第一个匹配特征对应的实现。然而，在某些情况下，某个类型可能会匹配到优先级更高的特征，而用户实际希望将其归入优先级更低的类别。如果发生这种情况，用户可以针对该类型特化那个不应匹配的特征，使其等同于`std::false_type`。
 
-Consider this type:
+考虑以下类型：
 
 [source]
 ----
 include::../../../test/doc_types.hpp[tag=snippet_conv_spec_trait1,indent=0]
 ----
 
-It exposes both a sequence API and a tuple API. But converting from <<ref_value>> to `user_ns::ip_address` would not be able to use implementation for sequences, since those are constructed empty and then populated one element at a time, while `ip_address` has a fixed size of 4. The tuple conversion would fit, though. The only problem is that <<ref_is_tuple_like>> has a lower priority than <<ref_is_sequence_like>>. In order to circumvent this, the user only needs to specialize <<ref_is_sequence_like>> to not match `ip_address`.
+它同时暴露了序列（sequence）API 和元组（tuple）API。然而，从 <<ref_value>> 转换到 user_ns::ip_address 时无法使用序列的实现，因为序列类型的转换会先构造一个空对象，再逐个填充元素，而 ip_address 的大小固定为 4。相比之下，元组转换是合适的。唯一的问题在于 <<ref_is_tuple_like>> 的优先级低于 <<ref_is_sequence_like>>。为绕过此问题，用户只需特化 <<ref_is_sequence_like>>，使其对 ip_address 不匹配即可。
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_conv_spec_trait2,indent=0]
 ----
 
-== `tag_invoke` Overloads
-The second, more powerful approach, is to provide the conversion implementation yourself. With Boost.JSON this is done by defining an overload of `tag_invoke` function (the benefits of this mechanism are outlined in http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1895r0.pdf[C++ proposal P1895]. In essence, `tag_invoke` provides a uniform interface for defining customization points by using argument-dependent lookup to find a viable overload from the point at which it is called. As the name suggests, a tag type is passed as an argument in order to:
+== `tag_invoke`重载
+第二种、更强大的方法是自行提供转换实现。在 Boost.JSON 中，这是通过定义`tag_invoke`函数的重载来实现的（该机制的优点详见 http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1895r0.pdf[C++提案P1895]）。本质上，`tag_invoke` 通过参数依赖查找（ADL）在调用点寻找可用的重载，从而为自定义扩展点提供统一接口。顾名思义，一个标签类型作为参数传递，用于：
 
-* discard candidates that are unrelated to that particular customization point, and
+* 1. 排除与该特定自定义点无关的候选函数，并且
 
-* embed the user-defined type into the arguments list (e.g. by using a tag type template such as `value_to_tag<T>`) so that its http://eel.is/c++draft/basic.lookup.argdep#2[associated namespaces and entities] are examined when name lookup is performed.
+* 2. 将用户定义的类型嵌入到参数列表中（例如，通过使用像`value_to_tag<t>`这样的标签类型模板），以便在执行名称查找时检查其http://eel.is/c++draft/basic.lookup.argdep#2[关联的命名空间和实体]。
 
-This has the effect of finding user-provided `tag_invoke` overloads, even if they are declared (lexically) after the definition of the calling function.
+这样做的效果是能够找到用户提供的`tag_invoke`重载，即使它们在调用函数定义之后（在词法上）声明。
 
-Overloads of `tag_invoke` called by <<ref_value_from>> take the form:
+由 <<ref_value_from>> 调用的 tag_invoke 重载具有如下形式：
 
 ```
 
@@ -44,7 +44,7 @@ void tag_invoke( const value_from_tag&, value&, T );
 
 ```
 
-While overloads of `tag_invoke` called by <<ref_value_to>> take the form:
+而由 <<ref_value_to>> 调用的`tag_invoke`重载采用以下形式：
 
 ```
 
@@ -52,21 +52,21 @@ T tag_invoke( const value_to_tag< T >&, const value& );
 
 ```
 
-If we implemented conversion for `user_ns::ip_address` manually with this approach, it would look like this:
+如果我们用这种方法手动实现`user_ns::ip_address`的转换，它将如下所示：
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_tag_invoke_1,indent=0]
 ----
 
-Since the type being converted is embedded into the function's signature, user-provided overloads are visible to argument-dependent lookup and will be candidates when a conversion is performed:
+由于被转换的类型已嵌入函数签名中，用户提供的重载对参数依赖查找（ADL）可见，并会在执行转换时成为候选函数：
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_tag_invoke_2,indent=0]
 ----
 
-Users can freely combine types with custom conversions with types with library-provided conversions. The library handles them correctly:
+用户可以自由地将具有自定义转换的类型与具有库提供转换的类型组合使用，库能正确处理它们：
 
 [source]
 ----
