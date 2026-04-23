@@ -10,114 +10,106 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [#conversion]
-= Value Conversion
-While the <<ref_value>> container makes it easy to create ad-hoc structures, often it is necessary to convert between JSON and user-defined types or types from the standard library.
+= 值转换
+尽管 <<ref_value>> 容器便于创建临时结构，但通常仍需在 JSON 与用户自定义类型或标准库类型之间进行转换。
 
-The function template <<ref_value_from>> provides an interface to construct a <<ref_value>> from a type `T`. The function template <<ref_value_to>> converts in the opposite direction, from a type `T` to <<ref_value>>. Both support a wide variety of different https://en.cppreference.com/w/cpp/language/types[fundamental types], such as `int` or `double`, standard library types, such as `std::string` or `std::vector<T>`, and can be extended to support user-defined types.
+函数模板 <<ref_value_from>> 提供了从类型 `T` 构造 <<ref_value>> 的接口。函数模板 <<ref_value_to>> 则执行相反方向的转换，从类型 `T` 转换为 <<ref_value>>。两者均支持多种不同的 https://en.cppreference.com/w/cpp/language/types[基础类型]（如 `int` 或 `double`）、标准库类型（如 `std::string` 或 `std::vector<t>`），并可扩展以支持用户定义类型。
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_conv_1,indent=0]
 ----
 
-For the type `T`, the appropriate conversion approach is chosen from the following list of categories. The first matching category is selected.
+对于类型 `T`，将从以下类别列表中选择合适的转换方式，并采用第一个匹配的类别。
 
-.Conversion categories
+.转换类别
 [%autowidth, cols=4]
 |===
-|Category of T|Comment|`value_from` behavior|`value_to` behavior
+|T 的类别|注释|`value_from` 行为|`value_to` 行为
 
-|Custom conversion.
+|自定义转换。
 |
-|Custom behavior.
-|Custom behavior.
+|自定义行为。
+|自定义行为。
 
-|Boost.JSON container.
+|Boost.JSON 容器。
 |
-|The result is equal to the input value.
-|The result is equal to the input value.
+|结果等于输入值。
+|结果等于输入值。
 
 |`bool`
 |
-|The result is equal to the input value.
-|The result is equal to the input value.
+|结果等于输入值。
+|结果等于输入值。
 
-|https://en.cppreference.com/w/cpp/types/is_arithmetic[Arithmetic type]
+|https://en.cppreference.com/w/cpp/types/is_arithmetic[算术类型]
 |
-a| The result is a number equal to input and has the type
+a| 结果为一个数值，等于输入值且类型为：
 
-* `std::int64_t`, if `T` is a signed integer'; or
-* `std::uint64_t`, if `T` is an unsigned integer; or
-* `double` otherwise.
-|The result is created via <<ref_value_to_number>>.
+* 若 `T` 为有符号整数，则为 `std::int64_t`；或
+* 若 `T` 为无符号整数，则为 `std::uint64_t`；或
+* 否则为 `double`。
+|结果通过 <<ref_value_to_number>> 创建。
 
-|Type satisfying <<ref_is_null_like>>
-|Intended for types like {std_monostate}.
-|The result is a null value.
-|The result is default-constructed.
+|满足 <<ref_is_null_like>> 的类型
+|适用于类似 {std_monostate} 的类型。
+|结果为空值。
+|结果将被默认构造。
 
-|Type satisfying <<ref_is_string_like>>.
-|A sequence of `char`s, e.g. `std::string`.
-|The result is a <<ref_string>>.
-|The result is constructed from a <<ref_string_view>>.
+|满足 <<ref_is_string_like>> 的类型。
+|`char` 序列，例如 `std::string`。
+|结果为 <<ref_string>>。
+|结果由 <<ref_string_view>> 构造。
 
-|Type satisfying <<ref_is_variant_like>>.
-|`std::variant` and similar types, e.g. `boost::variant2::variant`.
-|The result is equal to the result of conversion of the active variant
-    alternative.
-|The result holds the first alternative for which a conversion succeeds.
+|满足 <<ref_is_variant_like>> 的类型。
+|`std::variant` 及类似类型，例如 `boost::variant2::variant`。
+|结果等同于对活跃的变体备选项进行转换所得的结果。
+|结果包含首个转换成功的备选项。
 
-|Type satisfying <<ref_is_optional_like>>
+|满足 <<ref_is_optional_like>> 的类型
 |
-|If the input value is empty, the result is a `null`. Otherwise it is
-    equivalent to conversion of the object stored inside of optional.
-|The result is default constructed if the input value is `null`. Otherwise the
-    result is constructed from the result of conversion of the input to the
-    type stored in optional.
+|若输入值为空，则结果为 `null`；否则等同于对可选类型内部存储对象的转换结果。
+|若输入值为 `null`，则结果为默认构造；否则结果由输入值转换为可选类型内部存储类型的结果构造。
 
-|Type satisfying <<ref_is_map_like>>.
-|A one-to-one mapping (e.g. `std::map`) with string-like keys.
-|The result is an <<ref_object>>.
-|The result is default-constructed, and elements are `insert`-ed at the end.
+|满足 <<ref_is_map_like>> 的类型。
+|具有类字符串键的一对一映射（例如 `std::map`）。
+|结果为 <<ref_object>>。
+|结果为默认构造，元素在末尾通过 `insert` 被插入。
 
-|Type satisfying <<ref_is_sequence_like>>.
-|A sequence of elements, e.g. `std::vector`.
-|The result is an <<ref_array>>.
-|The result is default-constructed, and elements are `insert`-ed at the end.
+|满足 <<ref_is_sequence_like>> 的类型。
+|元素序列，例如 `std::vector`。
+|结果是一个 <<ref_array>>。
+|结果为默认构造，元素在末尾通过 `insert` 被插入。
 
-|Type satisfying <<ref_is_tuple_like>>.
-|A heterogenous sequence with fixed size, e.g. `std::tuple` and `std::pair`.
-|The result is an <<ref_array>>.
-|The result is constructed with the array elements as constructor arguments.
+|满足 <<ref_is_tuple_like>> 的类型。
+|一种大小固定的异构序列，例如 `std::tuple` 和 `std::pair`。
+|结果是一个 <<ref_array>>。
+|结果通过将数组元素作为构造函数参数进行构造。
 
-|Type satisfying <<ref_is_described_class>>
+|满足 <<ref_is_described_class>> 的类型
 |
-|The result is an <<ref_object>> with described members' names as keys.
-|The result is default-constructed and described members are assigned
-    corresponding values.
+|结果是一个 <<ref_object>>，其键为所描述成员的名称。
+|结果将被默认构造，并为其所描述的成员赋予相应的值。
 
-|Type satisfying <<ref_is_described_enum>>
+|满足 <<ref_is_described_enum>> 的类型
 |
-|If the input value is equal to one of the described enumerators, the result is
-    a <<ref_string>>, containing its name. Otherwise it's equal to the input
-    value converted to its underlying type.
-|The result is the described enumerator, corresponding to the input
-    <<ref_string>>.
+|如果输入值等于某个已描述的枚举项，则结果为一个包含该枚举项名称的 <<ref_string>>；否则，结果等同于将输入值转换为其底层类型后的值。
+|结果为与输入 <<ref_string>> 对应的已描述枚举项。
 
-|Type satisfying <<ref_is_path_like>>.
-|`std::filesystem::path` and similar types, e.g. `boost::filesystem::path`.
-|The result is equal to the result of `path::generic_string`.
-|The result is constructed from two pointers to `const char`.
+|满足 <<ref_is_path_like>> 的类型。
+|`std::filesystem::path` 及类似类型，例如 `boost::filesystem::path`。
+|结果等于 `path::generic_string` 的结果。
+|结果由两个指向 `const char` 的指针构造而成。
 |===
 
-For composite types (sequences, tuples, described classes, etc.) conversion of contained objects is applied recursively. For example:
+对于复合类型（如序列、元组、已描述的类等），对其所包含对象的转换会递归应用。例如：
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_conv_recursive,indent=0]
 ----
 
-Here, the map is converted into an <<ref_object>>, since it matches <<ref_is_map_like>>. Each of its keys is converted into a <<ref_string>>, as `std::string` matches <<ref_is_string_like>>, and each of its values is converted into an <<ref_array>>, as `std::pair` matches <<ref_is_tuple_like>>. Finally, elements of pairs are converted into a `std::int64_t` number and a `bool`.
+此处，该映射被转换为一个 <<ref_object>>，因为它匹配 <<ref_is_map_like>>。其每个键被转换为一个 <<ref_string>>（因为 `std::string` 匹配 <<ref_is_string_like>>），而每个值被转换为一个 <<ref_array>>（因为 `std::pair` 匹配 <<ref_is_tuple_like>>）。最后，每对元素分别被转换为一个 `std::int64_t` 类型的数值和一个 `bool` 值。
 
 :leveloffset: +1
 
