@@ -7,15 +7,15 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= Allocation Control
-As <<ref_value_from>> creates a <<ref_value>> object, users may want to control the way memory is allocated for it. For this reason the function has an optional <<ref_storage_ptr>> parameter, that is used to set the {ref_memory_resource} for the result.
+= 分配控制
+由于<<ref_value_from>>会创建一个<<ref_value>>对象，用户可能希望控制其内存分配方式。因此，该函数具有一个可选的 <<ref_storage_ptr>> 参数，用于为结果指定{ref_memory_resource}。
 
 [NOTE]
-<<ref_value_to>> does not have a similar parameter, as <<ref_value>> is not created.
+<<ref_value_to>> 没有类似的参数，因为该函数不会创建 <<ref_value>> 对象。
 
-As the conversion result is set via an output parameter of type `value&`, the intended <<ref_storage_ptr>> is correctly propagated. But users still should take care to not create temporaries using the default {ref_memory_resource} by accident.
+由于转换结果是通过类型为`value&amp;`的输出参数设置的，因此预期的<<ref_storage_ptr>>会被正确传播。但用户仍需注意，避免意外创建使用默认 {ref_memory_resource} 的临时对象。
 
-For example, consider this alternative implementation of `tag_invoke` for `ip_address` from the section <<custom_conversions>>.
+例如，考虑<<custom_conversions>>节中针对`ip_address`的`tag_invoke`的替代实现。
 
 ```
 
@@ -27,6 +27,6 @@ tag_invoke( const value_from_tag&, value& jv, ip_address const& addr )
 
 ```
 
-This implementation explicitly creates an <<ref_array>> rather than relying on assignment from an initializer list. But the array uses default {ref_memory_resource}, not the one used by `jv`.
+该实现显式创建了一个 <<ref_array>>，而不是依赖于初始化列表的赋值。但该数组使用的是默认的 {ref_memory_resource}，而不是`jv`所使用的内存资源。
 
-To avoid creating such temporaries with an incorrect {ref_memory_resource}, using <<ref_value>>'s member functions <<ref_value_emplace_array>>, <<ref_value_emplace_object>>, and <<ref_value_emplace_string>> can be helpful.
+为避免创建使用错误 {ref_memory_resource} 的临时对象，可以借助 <<ref_value>> 的成员函数 <<ref_value_emplace_array>>、<<ref_value_emplace_object>> 和 <<ref_value_emplace_string>>。
