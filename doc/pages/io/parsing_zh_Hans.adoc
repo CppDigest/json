@@ -9,54 +9,57 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [pagelevels=1]
-= 解析
-解析是将序列化的JSON文本验证并分解为元素的过程。该库提供以下函数和类型来辅助解析：
+= 解析 解析是将序列化的JSON文本验证并分解为元素的过程。该库提供以下函数和类型来辅助解析：
 
-.解析函数和类型
+.Parsing Functions and Types
 |===
-|Name|描述
+|Name|Description
 
 | <<ref_basic_parser>>
-| 一个 SAX 推送式解析器实现，它将序列化的 JSON 文本转换为对用户提供的处理器的一系列成员函数调用，从而允许自定义内存中文档的表示行为。
+| A SAX push parser implementation which converts a serialized JSON text into
+.解析函数和类型 |=== |Name|描述
 
 | <<ref_parse_options>>
-| 一种结构，用于选择在解析期间启用哪些扩展。
+| A structure used to select which extensions are enabled during parsing.
 
 | <<ref_parse>>
-| 解析包含完整序列化 JSON 文本的字符串，并返回一个 <<ref_value>>。
+| Parse a string containing a complete serialized JSON text, and return
+<<ref_parse>> 函数提供了一个简单接口，用于在单个函数调用中将序列化的JSON文本转换为<<ref_value>>。此重载使用异常来指示错误：
 
 | <<ref_parser>>
-| 一种有状态的 DOM 解析器对象，可用于高效解析一系列 JSON 文本（每个文本均位于单独的连续字符缓冲区中），并将每个结果作为<<ref_value>>返回。
+| A stateful DOM parser object which may be used to efficiently parse a series
+或者，可以使用{ref_error_code}：
 
 | <<ref_stream_parser>>
-| 一种有状态的DOM解析器对象，可用于高效地增量解析一系列JSON文本，并将每个结果作为<<ref_value>>返回。
+| A stateful DOM parser object which may be used to efficiently parse a series
+即使使用错误码，底层 {ref_memory_resource} 仍可能抛出异常：
 
 | <<ref_value_stack>>
-| 一种用于高效构建 <<ref_value>> 的低层构建块。解析器在内部使用它，用户也可以使用它来适配外部解析器以生成此库的容器。
-|===
+| A low level building block used for efficiently building a <<ref_value>>. The
+前述示例中返回的 <<ref_value>> 使用了 <<default_memory_resource,default memory resource>>（默认内存资源）。以下代码使用了 <<ref_monotonic_resource>>，从而实现更快的解析。`jv` 被标记为 `const` 以防止后续修改，因为使用单调内存资源的容器在被修改时会浪费内存。
 
-<<ref_parse>> 函数提供了一个简单接口，用于在单个函数调用中将序列化的JSON文本转换为<<ref_value>>。此重载使用异常来指示错误：
+The <<ref_parse>> function offers a simple interface for converting a serialized JSON text to a <<ref_value>> in a single function call. This overload uses exceptions to indicate errors:
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_1,indent=0]
 ----
 
-或者，可以使用{ref_error_code}：
+Alternatively, an {ref_error_code} can be used:
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_2,indent=0]
 ----
 
-即使使用错误码，底层 {ref_memory_resource} 仍可能抛出异常：
+Even when using error codes, exceptions thrown from the underlying {ref_memory_resource} are still possible:
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_3,indent=0]
 ----
 
-前述示例中返回的 <<ref_value>> 使用了 <<default_memory_resource,default memory resource>>（默认内存资源）。以下代码使用了 <<ref_monotonic_resource>>，从而实现更快的解析。`jv` 被标记为 `const` 以防止后续修改，因为使用单调内存资源的容器在被修改时会浪费内存。
+The <<ref_value>> returned in the preceding examples use the <<default_memory_resource,default memory resource>>. The following code uses a <<ref_monotonic_resource>>, which results in faster parsing. `jv` is marked `const` to prevent subsequent modification, because containers using a monotonic resource waste memory when mutated.
 
 [source]
 ----
@@ -86,6 +89,7 @@ include::../../../test/doc_parsing.cpp[tag=doc_parsing_15,indent=0]
 ----
 
 CAUTION: 启用注释支持时，读取输入时需格外注意不要丢失空白字符。例如，`std::getline`会从它生成的字符串中移除行尾字符。
+when reading the input. For example, `std::getline` removes the endline characters from the string it produces.
 
 == 全精度数字解析
 库默认使用的数字解析算法速度较快，但可能导致轻微的精度损失。这在某些应用中可能不可接受，因此可以选择启用一种没有此缺陷但速度稍慢的替代算法。为此，您还需要使用<<ref_parse_options>>结构体。
@@ -141,13 +145,14 @@ include::../../../test/doc_parsing.cpp[tag=doc_parsing_9,indent=0]
 在以下示例中，JSON文本从标准输入逐行解析。此处使用错误码替代异常。函数<<ref_stream_parser_finish>>用于指示输入结束：
 
 CAUTION: 如果启用了注释，此示例将失效，原因在于使用了 `std::getline`（参见 <<non_standard_json>> 章节中的警告）。
+我们可以通过从行序列中提取_多个_JSON值来进一步复杂化此示例。
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_10,indent=0]
 ----
 
-我们可以通过从行序列中提取_多个_JSON值来进一步复杂化此示例。
+We can complicate the example further by extracting _several_ JSON values from the sequence of lines.
 
 [source]
 ----
