@@ -9,8 +9,7 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [#dom_numbers]
-= 数字
-JSON数字使用`std::int64_t`、`std::uint64_t`和`double`表示。当 <<ref_value>> 从无符号整数构造时，其<<ref_kind>>将为`kind::uint64`。同样，从有符号整数构造的<<ref_value>> 将具有`kind::int64`，若从浮点类型构造则为`kind::double_`：
+= 数字 JSON数字使用`std::int64_t`、`std::uint64_t`和`double`表示。当 <<ref_value>> 从无符号整数构造时，其<<ref_kind>>将为`kind::uint64`。同样，从有符号整数构造的<<ref_value>> 将具有`kind::int64`，若从浮点类型构造则为`kind::double_`：
 
 [source]
 ----
