@@ -7,8 +7,7 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= 避免物理依赖
-一些用户（尤其是库作者）可能希望为其类型与 <<ref_value>> 提供转换功能，但同时又希望避免让自己的库依赖 Boost.JSON。借助一些前向声明，即可实现这一目标。
+= 避免物理依赖 一些用户（尤其是库作者）可能希望为其类型与 <<ref_value>> 提供转换功能，但同时又希望避免让自己的库依赖 Boost.JSON。借助一些前向声明，即可实现这一目标。
 
 [source]
 ----
