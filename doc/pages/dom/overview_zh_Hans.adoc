@@ -9,32 +9,35 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [#dom]
-= 文档模型
-在本库中，以下类型实现了用于在内存中表示 JSON 数据的容器：
+= 文档模型 在本库中，以下类型实现了用于在内存中表示 JSON 数据的容器：
 
-.容器类型
+.Container Types
 [%autowidth]
 |===
-|Type|描述
+|Type|Description
 
 | <<ref_array>>
-| 一种支持动态大小和快速随机访问的 JSON 值序列容器。其接口和性能特性类似于 {std_vector}。
+| A sequence container of JSON values supporting dynamic size and fast, random
+.容器类型 [%autowidth] |=== |Type|描述
 
 | <<ref_object>>
-| 一种具有唯一键的键值对关联容器，其中键为字符串，映射类型为 JSON 值。查找、插入和移除操作具有平均常数时间复杂度。此外，元素在内存中连续存储，支持缓存友好的迭代。
+| An associative container of key-value pairs with unique keys, where the key
+这些容器将在接下来的章节中深入探讨。
 
 | <<ref_string>>
-| 一个连续的字符范围。该库假定字符串内容仅包含有效的 UTF-8 编码。
+| A contiguous range of characters. The library assumes that the contents of
+:leveloffset: +1 include::value.adoc[] include::string.adoc[] include::array.adoc[] include::object.adoc[] include::numbers.adoc[] include::init_lists.adoc[] include::nested_access.adoc[] :leveloffset: -1
 
 | <<ref_value>>
-| 一种特殊的变体类型，可持有六种标准 JSON 数据类型中的任意一种。
-|===
+| A special variant which can hold one of any of the six standard JSON data
+types. |===
 
-这些容器将在接下来的章节中深入探讨。
+These containers are explored in-depth in the sections that follow.
 
 [NOTE]
 ====
-文中所使用的示例代码和标识符均假定以下声明已生效：
+Sample code and identifiers used throughout are written as if the following
+declarations are in effect:
 
 [source]
 ----
@@ -43,12 +46,4 @@ using namespace boost::json;
 ----
 ====
 
-:leveloffset: +1
-include::value.adoc[]
-include::string.adoc[]
-include::array.adoc[]
-include::object.adoc[]
-include::numbers.adoc[]
-include::init_lists.adoc[]
-include::nested_access.adoc[]
-:leveloffset: -1
+:leveloffset: +1 include::value.adoc[] include::string.adoc[] include::array.adoc[] include::object.adoc[] include::numbers.adoc[] include::init_lists.adoc[] include::nested_access.adoc[] :leveloffset: -1
