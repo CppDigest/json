@@ -8,49 +8,59 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= `storage_ptr`
-本库中的可变长度容器均使用动态分配的内存来存储其内容。调用方可通过在特定构造函数和函数参数列表中指定 <<ref_storage_ptr>> ，以控制所使用的内存分配策略。<<ref_storage_ptr>> 具有以下特性：
+= `storage_ptr` 本库中的可变长度容器均使用动态分配的内存来存储其内容。调用方可通过在特定构造函数和函数参数列表中指定 <<ref_storage_ptr>> ，以控制所使用的内存分配策略。<<ref_storage_ptr>> 具有以下特性：
 
 * 存储指针始终指向一个有效的、类型擦除后的 {ref_memory_resource}。
-
-* 默认构造的存储指针引用 <<default_memory_resource,default resource>>（默认资源），这是一个由实现定义的实例，始终使用等效于全局 operator new 和 operator delete 的方式。
-
-* 从 {ref_memory_resource} 或 {ref_polymorphic_allocator} 构造的存储指针不获取所有权；调用方负责确保资源的生命周期持续到不再被引用为止。
-
-* 通过 <<ref_make_shared_resource>> 获取的存储指针会获得对内存资源的共享所有权；该资源的生命周期将延长，直至所有该存储指针的副本均被销毁。
-
-* 存储指针在对资源进行类型擦除之前会记录 <<ref_is_deallocate_trivial>> 的值，从而允许在运行时查询该值。
-
 以下是使用该库时所有与分配相关的类型和函数列表：
 
-.函数与类型
+* 默认构造的存储指针引用 <<default_memory_resource,default resource>>（默认资源），这是一个由实现定义的实例，始终使用等效于全局 operator new 和 operator delete 的方式。
+.函数与类型 |=== |Name|描述
+
+* 从 {ref_memory_resource} 或 {ref_polymorphic_allocator} 构造的存储指针不获取所有权；调用方负责确保资源的生命周期持续到不再被引用为止。
+{ref_polymorphic_allocator} do not acquire ownership; the caller is responsible for ensuring that the lifetime of the resource extends until it is no longer referenced.
+
+* 通过 <<ref_make_shared_resource>> 获取的存储指针会获得对内存资源的共享所有权；该资源的生命周期将延长，直至所有该存储指针的副本均被销毁。
+ownership of the memory resource; the lifetime of the resource is extended until all copies of the storage pointer are destroyed.
+
+* 存储指针在对资源进行类型擦除之前会记录 <<ref_is_deallocate_trivial>> 的值，从而允许在运行时查询该值。
+before type-erasing the resource, allowing the value to be queried at run-time.
+
+This lists all of the allocation-related types and functions available when using the library:
+
+.Functions and Types
 |===
-|Name|描述
+|Name|Description
 
 | <<ref_get_null_resource>>
-| 返回一个指向内存资源实例的指针，该实例在分配内存时总是抛出异常。此机制用于确保解析或容器操作不会进行动态内存分配，从而维持该不变性。
+| Returns a pointer to a memory resource instance which always throws an
+exception upon allocation. This is used to to achieve the invariant that no parsing or container operation will dynamically allocate memory.
 
 | <<ref_is_deallocate_trivial>>
-| 一个自定义点，允许内存资源类型表明其 deallocate 调用是平凡的。
+| A customization point allowing a memory resource type to indicate that calls
+to deallocate are trivial.
 
 | <<ref_make_shared_resource>>
-| 一个返回智能指针的函数，该智能指针对新分配的内存资源具有共享所有权。
+| A function returning a smart pointer with shared ownership of a newly
+allocated memory resource.
 
 | {ref_memory_resource}
-| 表示分配器的抽象基类。
+| The abstract base class representing an allocator.
 
 | <<ref_monotonic_resource>>
-| 一种内存资源，用于分配大块内存，且其 deallocate 函数是平凡的。所分配的内存不会被释放，直到该资源被销毁，因此在解析场景下速度很快，但不适合执行修改操作。
+| A memory resource which allocates large blocks of memory and has a trivial
+deallocate function. Allocated memory is not freed until the resource is destroyed, making it fast for parsing but not suited for performing modifications.
 
 | {ref_polymorphic_allocator}
-| 一个 {req_Allocator}，它通过引用 {ref_memory_resource} 执行内存分配。
+| An {req_Allocator} which uses a reference to a {ref_memory_resource} to
+perform allocations.
 
 | <<ref_static_resource>>
-| 一种使用调用方提供的单一缓冲区的内存资源，不进行任何动态分配。该资源在解析时速度很快，但不适合执行修改操作。
+| A memory resource that uses a single caller provided buffer. No dynamic
+allocations are used. This is fast for parsing but not suited for performing modifications.
 
 | <<ref_storage_ptr>>
-| 一种用于管理和访问 {ref_memory_resource} 的智能指针。
-|===
+| A smart pointer through which a {ref_memory_resource} is managed and
+accessed. |===
 
 == 默认内存资源
 默认内存资源使用全局 `operator new` 和 `operator delete` 来进行内存分配。该资源不采用引用计数，且其 deallocate 函数是非平凡的。所有默认构造的 <<ref_storage_ptr>> 对象均引用同一个内存资源：
