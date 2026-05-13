@@ -1,0 +1,89 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+= 背景
+C++中分配器的第一个版本定义了名为{req_Allocator}的要求，并将每个标准容器设计为以分配器类型为模板参数的类模板。例如，以下是 {std_vector} 的声明：
+
+[source]
+----
+include::../../../test/doc_background.cpp[tag=doc_background_1,indent=0]
+----
+
+标准分配器是{req_DefaultConstructible}。为支持有状态分配器，容器提供了额外的构造函数重载，接受一个分配器实例参数。
+
+[source]
+----
+include::../../../test/doc_background.cpp[tag=doc_background_2,indent=0]
+----
+
+尽管该机制能够正常工作，但仍存在一些可用性问题：
+
+* 容器必须是一个类模板。
+* 在元素类型上参数化分配器的方式显得笨拙。
+* 分配器特征机制（尤其是 POCCA 和 POCMA）复杂且容易出错。
+
+使用多种分配器类型的基于分配器的程序会引发更多的函数模板实例化，且通常编译速度更慢，因为类模板的函数定义必须在所有调用点可见。
+
+== 多态分配器
+
+{cpp}17通过引入一个名为 {ref_memory_resource} 的抽象接口来表示底层分配操作，从而改进分配器模型。该接口未在元素类型上参数化，且无特征：
+
+[source]
+----
+include::../../../test/doc_background.cpp[tag=doc_background_3,indent=0]
+----
+
+类模板{ref_polymorphic_allocator}包装了{ref_memory_resource}指针，并满足{req_Allocator}要求，使其可在需要分配器的地方使用。标准库为使用多态分配器的标准容器提供了类型别名：
+
+[source]
+----
+include::../../../test/doc_background.cpp[tag=doc_background_4,indent=0]
+----
+
+多态分配器通过一个指向内存资源的指针进行构造：
+
+[source]
+----
+include::../../../test/doc_background.cpp[tag=doc_background_5,indent=0]
+----
+
+内存资源通过指针传递；所有权不发生转移。调用方需负责确保该内存资源的生命周期持续到所有使用它的容器都离开作用域为止，否则行为未定义。在某些场景下，这种模型是合适的，例如以下示例中使用了一个基于局部栈缓冲区构造的单调内存资源：
+
+[source]
+----
+include::../../../test/doc_background.cpp[tag=doc_background_6,indent=0]
+----
+
+然而，有时需要共享所有权，即内存资源的生命周期应自动延长。例如，若某个库希望返回一个容器，该容器拥有该库自定义内存资源的实例，如下所示：
+
+[source]
+----
+include::../../../test/doc_background.cpp[tag=doc_background_7,indent=0]
+----
+
+可通过声明容器使用自定义分配器（可能使用`std::shared_ptr&lt; std::pmr::memory_resource &gt;`作为数据成员）来解决此问题。这会阻碍库的组合；每个库都会导出各自独特且互不兼容的容器类型。原始内存资源指针也容易被误用：
+
+[source]
+----
+include::../../../test/doc_background.cpp[tag=doc_background_8,indent=0]
+----
+
+针对此问题的变通方案往往比问题本身更糟糕。该库可以返回一个包含 vector 和`std::unique_ptr<std::pmr::memory_resource>`的pair，必须由调用方自行管理。或者，该库也可以修改其函数签名，接受调用方提供的{ref_memory_resource}``*``，同时将所需的内存资源（如上文的`my_resource`）公开。
+
+== 问题陈述
+
+我们希望采用一种使用单一类型`T`的分配器模型，该模型具有以下特性：
+
+* `T`不是类模板
+* `T`引用一个 {ref_memory_resource}
+* `T`同时支持引用语义和共享所有权
+* `T`能与已使用`std::pmr`的代码互操作
+
+Boost.JSON通过引入一个名为<<ref_storage_ptr>> 的新型智能指针解决此问题，该指针基于{cpp}17的内存分配接口构建，实现了上述目标。因此，使用该类型的库更易于组合，并能获得更快的编译速度，因为使用该类型的容器的成员函数可以定义在类外（out-of-line）。

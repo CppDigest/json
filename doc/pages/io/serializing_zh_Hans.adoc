@@ -1,0 +1,50 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+= 序列化
+
+序列化是指将内存中由<<ref_value>>表示的JSON文档转换为字符序列的过程。该库提供以下用于序列化的自由函数和类型：
+
+.序列化函数和类型
+|===
+|Name|描述
+
+| <<ref_operator_lt_lt>>
+| 将 <<ref_value>>、<<ref_array>>、<<ref_object>> 或 <<ref_string>> 序列化到 {std_ostream}。
+
+| <<ref_serialize>>
+| 返回一个 {std_string}，表示序列化后的 <<ref_value>>、<<ref_array>>、<<ref_object>> 或 <<ref_string>>。
+
+| <<ref_serializer>>
+| 一个有状态的对象，可用于高效地序列化一个或多个 <<ref_value>>、<<ref_array>>、<<ref_object>> 或 <<ref_string>> 的实例。
+|===
+
+为便于调试和输出，库中的容器类型可通过流操作符写入标准输出流：
+
+[source]
+----
+include::../../../test/doc_serializing.cpp[tag=doc_serializing_1,indent=0]
+----
+
+<<ref_serialize>> 函数将一个 <<ref_value>> 转换为 {std_string}：
+
+[source]
+----
+include::../../../test/doc_serializing.cpp[tag=doc_serializing_2,indent=0]
+----
+
+在完整序列化一个 <<ref_value>> 效率低下甚至不可行的情况下，可使用 <<ref_serializer>> 对其进行逐步序列化。这样做有多种原因，例如避免缓冲整个输出，或确保每个周期执行固定量的工作。<<ref_serializer>> 的实例通过内部动态分配的结构维护输出状态，并提供接口，将序列化输出的连续缓冲区写入调用方提供的缓冲区中。以下示例展示了如何使用 <<ref_serializer>> 来实现 <<ref_operator_lt_lt>>：
+
+[source]
+----
+include::../../../include/boost/json/impl/serialize.ipp[tag=example_operator_lt_lt,indent=0]
+----
+
+与解析器类似，序列化器可通过调用 <<ref_serializer_reset>> 重复使用。这会将对象重置为序列化新实例的状态，并保留先前分配的内存，从而在序列化多个变量时提升性能。

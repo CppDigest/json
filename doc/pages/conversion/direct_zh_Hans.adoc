@@ -1,0 +1,26 @@
+////
+Copyright (c) 2023 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+= 直接转换
+对于大型输入，先解析到库的容器中，再通过 <<ref_value_to>> 进行转换（或反之，先通过 <<ref_value_from>> 转换，再从 <<ref_value>> 序列化）可能代价过高。针对这类场景，库提供了可直接将数据解析到用户提供的对象中、或直接从用户提供的对象进行序列化的组件。
+
+这种方法的缺点在于，不支持完全自定义的类型表示，仅支持库提供的转换。此外，所有需通过解析进行填充的对象都必须是可默认构造的类型——这不仅包括顶层对象，也包括容器的元素、所描述`struct`的成员以及变体类型的备选项。
+
+尽管如此，如果你的类型是可默认构造的，并且不需要 <<ref_value_to>> 和 <<ref_value_from>> 所提供的自定义能力，那么使用直接转换可以获得显著的性能提升。
+
+直接解析是由<<ref_parse_into>> 系列函数执行的。库提供了接受&lt;<<ref_string_view>> 或`std::istream`的重载，并且可以通过抛出异常或设置错误码来报告错误。
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_parse_into_1,indent=0]
+----
+
+如果需要将增量解析与直接解析结合使用，可以借助 <<ref_parser_for>>。`parser_for<T>`是<<ref_basic_parser>> 的一个实例化，用于将数据解析到类型为`T`的对象中，并且是<<ref_parse_into>>在底层所使用的。
+
+直接序列化不需要任何特殊组件，可直接使用常规的 <<ref_serializer>> 和<<ref_serialize>>。

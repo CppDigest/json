@@ -1,0 +1,87 @@
+////
+Copyright (c) 2020 Krystian Stasiowski (sdkrystian@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+= 初始化列表
+初始化列表可用于构造或赋值一个<<ref_value>>：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_init_list_1,indent=0]
+----
+
+简单的初始化列表会生成一个 <<ref_array>>：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_init_list_2,indent=0]
+----
+
+初始化列表可以嵌套。以下示例中，我们构造了一个以数组作为元素的数组：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_init_list_3,indent=0]
+----
+
+当一个包含两个元素的初始化列表嵌套在外部初始化列表中时，尚不明确它表示的是一个 <<ref_array>> 还是一个 <<ref_object>>：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_init_list_4,indent=0]
+----
+
+在这种情况下，如果每个元素均由一个字符串后跟一个值组成，则外层的初始化列表会被解释为一个 <<ref_object>>；否则，它会被解释为一个 <<ref_array>>。
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_init_list_5,indent=0]
+----
+
+要手动消除歧义，请使用显式构造函数：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_init_list_6,indent=0]
+----
+
+初始化列表可用于明确地构造或赋值一个<<ref_object>> 或 <<ref_array>>：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_init_list_7,indent=0]
+----
+
+同样，用于 <<ref_object>> 的初始化列表始终会被解释为 <<ref_object>>。此时，初始化列表必须由键值对组成。例如，以下代码无法编译，因为` `1 无法转换为字符串：
+
+[source]
+----
+object jo = { { 1, 0.39 }, { "venus", 0.72 }, { "earth", 1 } };
+----
+
+当初始化一个 <<ref_object>> 或 <<ref_array>> 时，要求初始化列表被解释为对应类型的规则仅适用于最外层的初始化列表；后续嵌套的元素将遵循常规的歧义解析规则。
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_init_list_8,indent=0]
+----
+
+在初始化时，右值元素将被移动。
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_init_list_9,indent=0]
+----
+
+[WARNING]
+====
+请勿创建类型为 {std_initializer_list} 的变量。这可能导致临时对象在初始化列表被使用之前就被销毁。
+====
+
+在所有情况下，通过初始化列表构造的 <<ref_object>>、<<ref_array>> 或 <<ref_value>> 所拥有的 <<ref_storage_ptr>> 都会递归地传播到每个元素。

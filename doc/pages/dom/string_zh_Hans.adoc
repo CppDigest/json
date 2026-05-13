@@ -1,0 +1,76 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2020 Krystian Stasiowski (sdkrystian@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+[#dom_string]
+= `string`
+
+可修改的字符序列通过 <<ref_string>> 类型的对象表示。</ref_string>
+
+<<ref_string>> 的接口和功能与 {std_string} 相同，但有以下例外：
+
+* <<ref_string>>不是一个类模板，
+* <<ref_string>> 使用`char`作为其字符类型，
+* 字符串操作中冗余的重载已被基于 <<ref_string_view>> 的接口所取代，
+* 允许访问`[size(), capacity())`范围内的字符，
+* 使用<<ref_storage_ptr>>代替{req_Allocator}，且
+* 保证采用小缓冲区优化，从而避免为短字符串分配内存。
+
+通过增强的接口，所有需要输入字符串的操作均以单一重载形式实现，其参数类型为 <<ref_string_view>>，并可接受大多数类字符串对象。诸如以空字符结尾的字符指针、`std::string`、<<ref_string>>、字符串子范围以及可转换为 <<ref_string_view>> 的对象，均可传递给这些函数。
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_strings_4,indent=0]
+----
+
+更正式地说，`std::string` 中接受以下任一参数组合作为输入字符串的成员函数重载：
+
+* 一个`std::string`参数，或
+* 一个`std::string`参数和两个指定子字符串的`size_type`参数，或
+* 一个可转换为 <<ref_string_view>> 类型的参数，或
+* 一个可转换为<<ref_string_view>>类型的参数和两个指定子字符串的`size_type`参数，或
+* 一个`const_pointer`参数，或
+* 一个`const_pointer`类型的参数和一个指定字符串长度的`size_type`参数
+
+被一个接受 <<ref_string_view>> 参数的重载所替代。
+
+这一设计从接口中移除了多个冗余的重载。例如，`std::string::insert` 原本有 11 个重载，而在 <<ref_string>> 中被减少到仅 3 个，同时仍提供完全相同的功能。除此之外，接受 `std::initializer_list<char>` 参数的重载也被移除。这类重载用途有限，因为它们本质上只是对字符数组的封装，且语法效率低下：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_strings_3,indent=0]
+----
+
+随着用于指定子字符串参数的重载被移除，库提供了一个成员函数`subview`， 用于返回一个 <<ref_string_view>>，从而支持高效的子字符串操作：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_strings_2,indent=0]
+----
+
+<<ref_string>> 可使用 <<default_memory_resource,default memory resource>>（默认构造资源） 进行构造，且不会产生任何内存分配。或者，也可以显式提供一个 <<ref_storage_ptr>>：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_strings_1,indent=0]
+----
+
+== 格式化输出
+
+当<<ref_string>>被格式化到{std_ostream}时，结果是一个有效的JSON。即输出结果将被双引号括起来，并且内容会根据JSON规范进行正确转义。
+
+== 访问超出`size()`范围的存储空间
+
+<<ref_string>> 直接支持访问其在`[size(), capacity())`范围内的存储空间。这可用于高效地将字符串从多个部分组装起来。字符串组装完成后，可调用成员函数 <<ref_string_grow>> 来更新字符串的大小并插入空终止符。例如：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_strings_5,indent=0]
+----

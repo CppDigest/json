@@ -1,0 +1,73 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+[#dom_object]
+= `object`
+<<ref_value>> 使用 <<ref_object>> 的实例作为 JSON 对象的底层表示。<<ref_object>> 类型的实例是一种关联容器，存储键值对，其中键为 <<ref_string_view>>，映射的值类型为 <<ref_value>>。此类容器以标准映射（map）为模型，具有以下特性：
+
+* 元素以 <<ref_key_value_pair>> 的实例形式连续存储。
+
+* 迭代器是普通指针，在插入或删除操作时可能会失效。
+
+* 只要不发生删除操作，插入顺序即被保留。
+
+* 所有插入的值将使用与容器本身相同的 {ref_memory_resource}。
+
+可以使用 <<default_memory_resource,default memory resource>> 构造一个空对象，而不产生任何内存分配。也可以显式指定一个 <<ref_storage_ptr>>：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_objects_1,indent=0]
+----
+
+由两元素键值对组成的初始化列表可用于构造带有初始内容的对象。这些构造函数可能会分配内存并抛出异常：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_objects_2,indent=0]
+----
+
+或者，也可以在构造之后插入元素：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_objects_3,indent=0]
+----
+
+与 `std` 对应容器类似，可通过 <<ref_object_at>> 使用边界检查直接按键访问元素，或通过 <<ref_object_operator_lb_rb>> 进行无边界检查访问（若键不存在则创建空元素）：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_objects_4,indent=0]
+----
+
+容器内部通过键计算哈希表，使得查找操作的平均时间复杂度为常数级别。
+
+[WARNING]
+====
+与传统的基于节点的容器（如 `std::set`）不同，插入和擦除操作不保证引用稳定性或迭代器稳定性。
+
+例如：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_objects_5,indent=0]
+----
+
+在向 `obj` 添加一个新值后继续使用 `arr`，会导致未定义行为。
+====
+
+完整成员函数及嵌套类型列表请参阅 <<ref_object>> 的参考页。
+
+与 `std::pair` 类似，<<ref_key_value_pair>> 类型可用于 {cpp}17 的结构化绑定。为此专门提供了 `std::tuple_size`、`std::tuple_element` 的特化及 <<ref_get>> 的重载。
+
+== 格式化输出
+
+当 <<ref_object>> 被格式化输出到 {std_ostream} 时，结果将是有效的 JSON。即根据 JSON 规范，对象将以花括号和逗号分隔的键/值对列表形式输出。

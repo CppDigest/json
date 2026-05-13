@@ -1,0 +1,54 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+[#dom]
+= 文档模型
+在本库中，以下类型实现了用于在内存中表示 JSON 数据的容器：
+
+.容器类型
+[%autowidth]
+|===
+|Type|描述
+
+| <<ref_array>>
+| 一种支持动态大小和快速随机访问的 JSON 值序列容器。其接口和性能特性类似于 {std_vector}。
+
+| <<ref_object>>
+| 一种具有唯一键的键值对关联容器，其中键为字符串，映射类型为 JSON 值。查找、插入和移除操作具有平均常数时间复杂度。此外，元素在内存中连续存储，支持缓存友好的迭代。
+
+| <<ref_string>>
+| 一个连续的字符范围。该库假定字符串内容仅包含有效的 UTF-8 编码。
+
+| <<ref_value>>
+| 一种特殊的变体类型，可持有六种标准 JSON 数据类型中的任意一种。
+|===
+
+这些容器将在接下来的章节中深入探讨。
+
+[NOTE]
+====
+文中所使用的示例代码和标识符均假定以下声明已生效：
+
+[source]
+----
+#include <boost/json.hpp>
+using namespace boost::json;
+----
+====
+
+:leveloffset: +1
+include::value.adoc[]
+include::string.adoc[]
+include::array.adoc[]
+include::object.adoc[]
+include::numbers.adoc[]
+include::init_lists.adoc[]
+include::nested_access.adoc[]
+:leveloffset: -1

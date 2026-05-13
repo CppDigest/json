@@ -1,0 +1,98 @@
+////
+Copyright (c) 2022 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+= 上下文相关的转换
+此前在本节中，我们一直假定某个类型存在一种特定且合适的 JSON 表示形式。但实际情况并非总是如此。很多时候，同一个值在不同场景下需要以不同的 JSON 格式来表示。在 Boost.JSON 中，可以通过提供一个额外的参数——上下文（context）——来实现这一点。
+
+我们来实现从`user_ns::ip_address`到JSON字符串的转换：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_context_conversion_1,indent=0]
+----
+
+
+这些`tag_invoke`重载接受一个额外的`as_string`参数，用于将`ip_address`的这种特定表示形式与其他所有可能的表示形式区分开来。要使用这些重载，需要将`as_string`对象作为最后一个参数传递给 <<ref_value_from>> 或 <<ref_value_to>>：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_context_conversion_2,indent=0]
+----
+
+请注意，如果对于给定类型和给定上下文没有专用的`tag_invoke`重载，实现将回退到不带上下文的重载。因此，可以轻松地将上下文相关的转换与库提供的转换结合起来：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_context_conversion_3,indent=0]
+----
+
+== 第三方类型的转换
+通常，您无法为第三方库或标准库中的类型提供转换函数，因为这需要将`tag_invoke`重载放入您无法控制的命名空间中。但借助上下文，您可以将这些重载放在自己的命名空间里。这是因为上下文会将其关联的命名空间添加到搜索`tag_invoke`重载的命名空间列表中。
+
+例如，我们来使用 https://en.wikipedia.org/wiki/ISO_8601[ISO 8601]格式，对 https://en.cppreference.com/w/cpp/chrono/system_clock[``std::chrono::system_clock::time_point``] 实现转换。
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_context_conversion_4,indent=0]
+----
+
+为简洁起见，反向转换在此省略。
+
+这个新上下文的使用方式与本节前面介绍的`as_string`类似。
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_context_conversion_5,indent=0]
+----
+
+上下文支持的一个特定用例是适配器库，这些库为来自不同库的类型定义JSON转换逻辑。
+
+== 向转换函数传递数据
+到目前为止，我们使用的上下文都是空类。但上下文可以像普通类一样拥有数据成员和成员函数。转换函数的实现者可以利用这一点，在运行时对转换行为进行配置，或向转换函数传递特殊对象（例如分配器）。
+
+我们来重写``system_clock::time_point``的转换，以支持`std::strftime`所支持的任意格式。
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_context_conversion_6,indent=0]
+----
+
+这个`tag_invoke`重载允许我们在运行时更改日期转换的格式。另外请注意，`as_iso_8601`重载和`date_format`重载之间不存在歧义。您可以在程序中使用两者：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_context_conversion_7,indent=0]
+----
+
+== 组合上下文
+通常需要同时使用多个转换上下文。例如，考虑一个记录远程用户（通过 IP 地址标识）访问系统的日志，我们可以将其表示为 `std::vector<std::pair<std::chrono::system_clock::time_point, ip_address>>`。我们希望将``ip_address``和``time_point``都序列化为字符串，但这需要同时使用`as_string`和`as_iso_8601`两个上下文。要组合多个上下文，只需使用{std_tuple}。转换函数会从元组中选择第一个存在对应 `tag_invoke` 重载的元素，并调用该重载。与往常一样，不使用上下文的`tag_invoke`重载和库提供的通用转换也受支持。因此，我们的示例如下：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_context_conversion_8,indent=0]
+----
+
+在此代码片段中，`time_point`通过接受`as_iso_8601`的`tag_invoke`重载进行转换，`ip_address`通过接受`as_string`的`tag_invoke`重载进行转换，而{std_vector}则使用库提供的通用转换进行转换。
+
+== 上下文与复合类型
+如前所示，库提供的通用转换会将上下文传递给嵌套对象的转换函数。因此，当您希望为特定上下文启用的某个复合类型提供自己的转换函数时，通常也需要这样做
+
+考虑以下示例。如前一节所述，<<ref_is_map_like>>要求键类型满足<<ref_is_string_like>>。现在，假设您的键不是类字符串类型，但它们确实可以转换为<<ref_string>>。您可以通过上下文使此类映射也转换为对象。但如果您想同时为值使用另一个上下文，则需要一种方式将完整的组合上下文传递给映射元素。因此，您希望以下测试能够成功。
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_context_conversion_9,indent=0]
+----
+
+为此，您必须使用另一个`tag_invoke`重载。这次，它必须是一个函数模板，并且应包含两个上下文参数。第一个参数是用于区分该特定重载的具体上下文；第二个参数是传递给 <<ref_value_to>> 或<<ref_value_from>>的完整上下文。
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=doc_context_conversion_10,indent=0]
+----

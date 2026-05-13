@@ -1,0 +1,47 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+[#dom_array]
+= `array`
+一个 <<ref_value>> 存储一个 <<ref_array>> 的实例，作为 JSON 数组的底层表示。__array__ 类型的实例与存储 <<ref_value>> 的 {std_vector} 功能完全相同。此外，所有插入容器的值将使用与容器本身相同的 <<ref_storage_ptr>>。
+
+可以使用 <<default_memory_resource,default memory resource>> 构造一个空数组，而不会产生任何内存分配。也可以显式指定一个 <<ref_storage_ptr>>：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_arrays_1,indent=0]
+----
+
+可以使用初始化列表来构造带有初始内容的对象。这些构造函数可能会分配内存并抛出异常：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_arrays_2,indent=0]
+----
+
+或者，也可以在构造之后插入元素：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_arrays_3,indent=0]
+----
+
+与标准库中的对应容器类似，元素可通过从 0 开始的索引直接访问：使用 &lt;<<ref_array_at>> 进行带边界检查的访问，或使用 <<ref_array_operator_lb_rb>> 进行不带边界检查的访问：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_arrays_4,indent=0]
+----
+
+有关所有可用成员函数和嵌套类型的完整列表，请参阅 <<ref_array>> 的参考页面。
+
+== 格式化输出
+
+当将 <<ref_array>> 输出到 {std_ostream} 时，结果是一个符合 JSON 规范的有效 JSON：数组将以方括号括起，并以逗号分隔其中的值。
