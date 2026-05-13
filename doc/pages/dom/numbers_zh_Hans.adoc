@@ -9,53 +9,54 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [#dom_numbers]
-= Numbers JSON numbers are represented using `std::int64_t`, `std::uint64_t`, and `double`. When a <<ref_value>> is constructed from an unsigned integer, its <<ref_kind>> will be `kind::uint64`. Likewise, a <<ref_value>> constructed from a signed integer will have `kind::int64`, or `kind::double_` if constructed from a floating-point type:
+= 数字
+JSON数字使用`std::int64_t`、`std::uint64_t`和`double`表示。当 <<ref_value>> 从无符号整数构造时，其<<ref_kind>>将为`kind::uint64`。同样，从有符号整数构造的<<ref_value>> 将具有`kind::int64`，若从浮点类型构造则为`kind::double_`：
 
 [source]
 ----
 include::../../../test/doc_using_numbers.cpp[tag=doc_using_numbers_1,indent=0]
 ----
 
-When accessing a number contained within a <<ref_value>>, the function used must match the value's <<ref_kind>> exactly; no conversions will be performed. For example if `as_double` is called on a <<ref_value>> that contains a `std::uint64_t`, an exception is thrown. Similarly, the function `if_double` will return `nullptr` and calling `get_double` will result in undefined behavior:
+访问<<ref_value>>内包含的数字时，所使用的函数必须与该值的<<ref_kind>>完全匹配；不会执行任何转换。例如，如果在一个包含`std::uint64_t` 的 <<ref_value>> 上调用 `as_double`，将抛出异常。类似地，函数 `if_double` 将返回`nullptr`，而调用 `get_double` 将导致未定义行为：
 
 [source]
 ----
 include::../../../test/doc_using_numbers.cpp[tag=doc_using_numbers_2,indent=0]
 ----
 
-In cases where you know that a <<ref_value>> contains a number but don't know its <<ref_kind>>, `value::to_number` can be used to convert the <<ref_value>> to an arithmetic type:
+若已知 <<ref_value>> 包含数字，但不确定其 <<ref_kind>>，可使用 `value::to_number` 将该<<ref_value>> 转换为算术类型：
 
 [source]
 ----
 include::../../../test/doc_using_numbers.cpp[tag=doc_using_numbers_3,indent=0]
 ----
 
-If the <<ref_value>> does not contain a number, or if the conversion is to an integer type `T` and the number cannot be represented exactly by `T`, the conversion will fail. Otherwise, the result is the number converted to `T` as-if by `static_cast`:
+若<<ref_value>>不包含数字，或当转换目标为整数类型`T`且数字无法被`T`精确表示时，将导致转换失败。否则，结果是通过`static_cast`将数字转换为`T`所得的值：</ref_value>
 
 [source]
 ----
 include::../../../test/doc_using_numbers.cpp[tag=doc_using_numbers_4,indent=0]
 ----
 
-In settings where exceptions cannot be used, an overload of `value::to_number` accepting {ref_error_code} can be used instead with identical semantics to its throwing counterpart:
+在无法使用异常的场合，可改用接受{ref_error_code}的`value::to_number`重载，其语义与抛出异常版本完全相同：
 
 [source]
 ----
 include::../../../test/doc_using_numbers.cpp[tag=doc_using_numbers_5,indent=0]
 ----
 
-When parsing a JSON document, the type used to represent a number is not explicitly specified and must be determined from its value. In general, the parser will choose the best type which can accurately store the number as it appears in the document. Integers (i.e. numbers without decimals or exponents) that cannot be represented by `std::uint64_t` and `std::int64_t` will be represented as `double` to preserve their magnitude:
+在解析 JSON 文档时，数字的表示类型并未显式指定，而必须根据其值来确定。通常，解析器会选择能够精确存储文档中所出现数字的最佳类型。对于整数（即不带小数部分或指数的数字），若其值无法用 `std::uint64_t` 或 `std::int64_t` 表示，则会以 `double` 类型存储，以保留其数量级。
 
 [source]
 ----
 include::../../../test/doc_using_numbers.cpp[tag=doc_using_numbers_6,indent=0]
 ----
 
-More formally, if the number:
+更正式地，如果该数字：
 
-* contains a decimal point, or
-* contains an exponent, or
-* is negative and its value is less than `INT64_MIN`, or
-* is positive and its value is greater than `UINT64_MAX`,
+* 包含小数点，或
+* 包含指数，或
+* 为负数且其值小于`INT64_MIN`，或
+* 为正数且其值大于`UINT64_MAX`，
 
-then its type is `double`. Otherwise, if the number is positive and its value is greater than `INT64_MAX`, then its type is `std::uint64_t`. All other numbers are parsed as `std::int64_t`.
+则其类型为`double`。否则，若数字为正数且其值大于`INT64_MAX`，则其类型为`std::uint64_t`。其余所有数字均被解析为`std::int64_t`。

@@ -9,12 +9,14 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= Allocators
+= 分配器
 
-Here we discuss the various allocator models used in the C++ standard, followed by an explanation of the model used in this library and its benefits. Finally we discuss how the library interoperates with existing code that uses polymorphic allocators.
+本文将首先讨论C++标准中使用的各种分配器模型，随后介绍本库所采用的模型及其优势，最后说明该库如何与使用多态分配器的现有代码进行互操作。
 
 :leveloffset: +1
 
-include::background.adoc[] include::storage_ptr.adoc[] include::uses_allocator.adoc[]
+include::background.adoc[]
+include::storage_ptr.adoc[]
+include::uses_allocator.adoc[]
 
 :leveloffset: -1
