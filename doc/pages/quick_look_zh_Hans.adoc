@@ -9,8 +9,7 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [pagelevels=1,toclevels=1]
-= 快速浏览
-这里我们通过示例代码重点介绍重要特性，以帮助理解接口风格。首先包含库头文件，该文件将所有符号引入作用域；或者，也可以包含单独的头文件以获取特定类型的声明：
+= 快速浏览 这里我们通过示例代码重点介绍重要特性，以帮助理解接口风格。首先包含库头文件，该文件将所有符号引入作用域；或者，也可以包含单独的头文件以获取特定类型的声明：
 
 [source]
 ----
@@ -26,7 +25,8 @@ Official repository: https://github.com/boostorg/json
 
 [NOTE]
 ====
-文中所使用的示例代码和标识符均假定以下声明已生效：
+Sample code and identifiers used throughout are written as if the following
+declarations are in effect:
 
 [source]
 ----
@@ -39,7 +39,7 @@ using namespace boost::json;
 == 值
 假设您要在容器中重建一下 JSON 对象：
 
-[source, json]
+[source,json]
 ----
 {
   "pi": 3.141,
