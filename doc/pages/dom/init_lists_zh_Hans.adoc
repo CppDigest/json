@@ -8,8 +8,7 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= 初始化列表
-初始化列表可用于构造或赋值一个<<ref_value>>：
+= 初始化列表 初始化列表可用于构造或赋值一个<<ref_value>>：
 
 [source]
 ----
@@ -81,7 +80,8 @@ include::../../../test/snippets.cpp[tag=snippet_init_list_9,indent=0]
 
 [WARNING]
 ====
-请勿创建类型为 {std_initializer_list} 的变量。这可能导致临时对象在初始化列表被使用之前就被销毁。
+Do not create variables of type {std_initializer_list}. This may result in
+temporaries being destroyed before the initializer list is used.
 ====
 
 在所有情况下，通过初始化列表构造的 <<ref_object>>、<<ref_array>> 或 <<ref_value>> 所拥有的 <<ref_storage_ptr>> 都会递归地传播到每个元素。
