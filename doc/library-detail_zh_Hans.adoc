@@ -6,7 +6,7 @@ https://www.boost.org/doc/libs/release/libs/json/[image:https://raw.githubuserco
 |https://github.com/boostorg/json/tree/develop[`develop`]
 |https://azure.microsoft.com/en-us/services/devops/pipelines/[Azure]
 |https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=5&branchName=master[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/master[Build
-状态]] |https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=8&amp;branchName=develop[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/develop[Build Status]]
+状态]] |https://vinniefalco.visualstudio.com/json/_build/latest?definitionId=8&amp;branchName=develop[image:https://img.shields.io/azure-devops/build/vinniefalco/2571d415-8cc8-4120-a762-c03a8eda0659/8/develop[构建状态]]
 
 |Docs
 |https://www.boost.org/doc/libs/master/libs/json/[image:https://img.shields.io/badge/docs-master-brightgreen.svg[Documentation]]
