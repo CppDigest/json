@@ -19,43 +19,48 @@ Official repository: https://github.com/boostorg/json
 * <<ref_string>>不是一个类模板，
 * <<ref_string>> 使用`char`作为其字符类型，
 * 字符串操作中冗余的重载已被基于 <<ref_string_view>> 的接口所取代，
+通过增强的接口，所有需要输入字符串的操作均以单一重载形式实现，其参数类型为 <<ref_string_view>>，并可接受大多数类字符串对象。诸如以空字符结尾的字符指针、`std::string`、<<ref_string>>、字符串子范围以及可转换为 <<ref_string_view>> 的对象，均可传递给这些函数。
 * 允许访问`[size(), capacity())`范围内的字符，
 * 使用<<ref_storage_ptr>>代替{req_Allocator}，且
 * 保证采用小缓冲区优化，从而避免为短字符串分配内存。
+更正式地说，`std::string` 中接受以下任一参数组合作为输入字符串的成员函数重载：
 
-通过增强的接口，所有需要输入字符串的操作均以单一重载形式实现，其参数类型为 <<ref_string_view>>，并可接受大多数类字符串对象。诸如以空字符结尾的字符指针、`std::string`、<<ref_string>>、字符串子范围以及可转换为 <<ref_string_view>> 的对象，均可传递给这些函数。
+被一个接受 <<ref_string_view>> 参数的重载所替代。
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_strings_4,indent=0]
 ----
 
-更正式地说，`std::string` 中接受以下任一参数组合作为输入字符串的成员函数重载：
+这一设计从接口中移除了多个冗余的重载。例如，`std::string::insert` 原本有 11 个重载，而在 <<ref_string>> 中被减少到仅 3 个，同时仍提供完全相同的功能。除此之外，接受 `std::initializer_list<char>` 参数的重载也被移除。这类重载用途有限，因为它们本质上只是对字符数组的封装，且语法效率低下：
 
 * 一个`std::string`参数，或
 * 一个`std::string`参数和两个指定子字符串的`size_type`参数，或
+随着用于指定子字符串参数的重载被移除，库提供了一个成员函数`subview`， 用于返回一个 <<ref_string_view>>，从而支持高效的子字符串操作：
 * 一个可转换为 <<ref_string_view>> 类型的参数，或
 * 一个可转换为<<ref_string_view>>类型的参数和两个指定子字符串的`size_type`参数，或
+<<ref_string>> 可使用 <<default_memory_resource,default memory resource>>（默认构造资源） 进行构造，且不会产生任何内存分配。或者，也可以显式提供一个 <<ref_storage_ptr>>：
 * 一个`const_pointer`参数，或
 * 一个`const_pointer`类型的参数和一个指定字符串长度的`size_type`参数
+specifies the length of the string
 
-被一个接受 <<ref_string_view>> 参数的重载所替代。
+are replaced with an overload accepting a <<ref_string_view>> parameter.
 
-这一设计从接口中移除了多个冗余的重载。例如，`std::string::insert` 原本有 11 个重载，而在 <<ref_string>> 中被减少到仅 3 个，同时仍提供完全相同的功能。除此之外，接受 `std::initializer_list<char>` 参数的重载也被移除。这类重载用途有限，因为它们本质上只是对字符数组的封装，且语法效率低下：
+This design removes several redundant overloads from the interface. For example, the 11 overloads of `std::string::insert` are reduced to just 3 in <<ref_string>>, while still providing identical functionality. In addition to these changes, overloads taking a `std::initializer_list<char>` parameter have been removed. Such overloads have little use, as they serve as little more than wrappers for arrays with an inefficient syntax:
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_strings_3,indent=0]
 ----
 
-随着用于指定子字符串参数的重载被移除，库提供了一个成员函数`subview`， 用于返回一个 <<ref_string_view>>，从而支持高效的子字符串操作：
+With the removal of overloads that specify parameters for a substring, a member function `subview` that returns a <<ref_string_view>> is provided to facilitate cheap substring operations:
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_strings_2,indent=0]
 ----
 
-<<ref_string>> 可使用 <<default_memory_resource,default memory resource>>（默认构造资源） 进行构造，且不会产生任何内存分配。或者，也可以显式提供一个 <<ref_storage_ptr>>：
+A <<ref_string>> may be constructed using the <<default_memory_resource,default memory resource>> without incurring any memory allocations. Alternatively, a <<ref_storage_ptr>> can be provided explicitly:
 
 [source]
 ----

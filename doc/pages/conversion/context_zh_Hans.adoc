@@ -7,8 +7,7 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= 上下文相关的转换
-此前在本节中，我们一直假定某个类型存在一种特定且合适的 JSON 表示形式。但实际情况并非总是如此。很多时候，同一个值在不同场景下需要以不同的 JSON 格式来表示。在 Boost.JSON 中，可以通过提供一个额外的参数——上下文（context）——来实现这一点。
+= 上下文相关的转换 此前在本节中，我们一直假定某个类型存在一种特定且合适的 JSON 表示形式。但实际情况并非总是如此。很多时候，同一个值在不同场景下需要以不同的 JSON 格式来表示。在 Boost.JSON 中，可以通过提供一个额外的参数——上下文（context）——来实现这一点。
 
 我们来实现从`user_ns::ip_address`到JSON字符串的转换：
 

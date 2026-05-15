@@ -9,8 +9,7 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [#dom_array]
-= `array`
-一个 <<ref_value>> 存储一个 <<ref_array>> 的实例，作为 JSON 数组的底层表示。__array__ 类型的实例与存储 <<ref_value>> 的 {std_vector} 功能完全相同。此外，所有插入容器的值将使用与容器本身相同的 <<ref_storage_ptr>>。
+= `array` 一个 <<ref_value>> 存储一个 <<ref_array>> 的实例，作为 JSON 数组的底层表示。__array__ 类型的实例与存储 <<ref_value>> 的 {std_vector} 功能完全相同。此外，所有插入容器的值将使用与容器本身相同的 <<ref_storage_ptr>>。
 
 可以使用 <<default_memory_resource,default memory resource>> 构造一个空数组，而不会产生任何内存分配。也可以显式指定一个 <<ref_storage_ptr>>：
 

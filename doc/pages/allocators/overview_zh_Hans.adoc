@@ -15,8 +15,6 @@ Official repository: https://github.com/boostorg/json
 
 :leveloffset: +1
 
-include::background.adoc[]
-include::storage_ptr.adoc[]
-include::uses_allocator.adoc[]
+include::background.adoc[] include::storage_ptr.adoc[] include::uses_allocator.adoc[]
 
 :leveloffset: -1

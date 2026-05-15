@@ -8,8 +8,7 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= 背景
-C++中分配器的第一个版本定义了名为{req_Allocator}的要求，并将每个标准容器设计为以分配器类型为模板参数的类模板。例如，以下是 {std_vector} 的声明：
+= 背景 C++中分配器的第一个版本定义了名为{req_Allocator}的要求，并将每个标准容器设计为以分配器类型为模板参数的类模板。例如，以下是 {std_vector} 的声明：
 
 [source]
 ----
@@ -28,8 +27,9 @@ include::../../../test/doc_background.cpp[tag=doc_background_2,indent=0]
 * 容器必须是一个类模板。
 * 在元素类型上参数化分配器的方式显得笨拙。
 * 分配器特征机制（尤其是 POCCA 和 POCMA）复杂且容易出错。
-
 使用多种分配器类型的基于分配器的程序会引发更多的函数模板实例化，且通常编译速度更慢，因为类模板的函数定义必须在所有调用点可见。
+
+Allocator-based programs which use multiple allocator types incur a greater number of function template instantiations and are generally slower to compile because class template function definitions must be visible at all call sites.
 
 == 多态分配器
 
