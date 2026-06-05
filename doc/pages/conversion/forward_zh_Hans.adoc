@@ -7,25 +7,25 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= Avoiding Physical Dependency Some users, particularly library authors, may wish to provide conversions between their types and <<ref_value>>, but at the same time would prefer to avoid having their library depend on Boost.JSON. This is possible to achieve with the help of a few forward declarations.
+= 避免物理依赖 一些用户（尤其是库作者）可能希望为其类型与 &lt;<ref_value>&gt; 提供转换功能，但同时又希望避免让自己的库依赖 Boost.JSON。借助一些前向声明，即可实现这一目标。</ref_value>
 
 [source]
 ----
 include::../../../test/doc_forward_conversion.cpp[tag=doc_forward_conversion_1,indent=0]
 ----
 
-Note that <<ref_value_from>> is declared using an out-parameter, rather then returning its result. This overload is specifically designed for this use-case.
+请注意，&lt;<ref_value_from>&gt; 是通过输出参数声明的，而非返回其结果。该重载正是为这一使用场景而设计的。</ref_value_from>
 
-After that the definitions of `tag_invoke` overloads should be provided. These overloads have to be templates, since <<ref_value>> is only forward-declared and hence is an incomplete type.
+之后应提供 `tag_invoke` 重载的定义。这些重载必须是模板，因为 &lt;<ref_value>&gt; 仅是前向声明的，因此是一个不完整类型。</ref_value>
 
 [source]
 ----
 include::../../../test/doc_forward_conversion.cpp[tag=doc_forward_conversion_2,indent=0]
 ----
 
-As discussed previously, we prefer to define a non-throwing overload of `tag_invoke` for <<ref_try_value_to>>, rather then the throwing overload for <<ref_value_to>>, as the latter can fallback to the former without performance degradation.
+如前所述，我们更倾向于为 &lt;<ref_try_value_to>&gt; 定义不抛异常的 `tag_invoke` 重载，而不是为 &lt;<ref_value_to>&gt; 定义抛异常的重载，因为后者可以在无性能损失的情况下回退到前者。</ref_value_to></ref_try_value_to>
 
-Forward declarations of contextual conversions are done very similarly:
+上下文相关转换的前向声明方式与此非常相似：
 
 [source]
 ----
