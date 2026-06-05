@@ -8,70 +8,70 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= Initializer Lists Initializer lists can be used to construct or assign a <<ref_value>>:
+= 初始化列表 初始化列表可用于构造或赋值一个&lt;<ref_value>&gt;：</ref_value>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_init_list_1,indent=0]
 ----
 
-Simple initializer lists produce an <<ref_array>>:
+简单的初始化列表会生成一个 &lt;<ref_array>&gt;：</ref_array>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_init_list_2,indent=0]
 ----
 
-Initializer lists can be nested. Here we construct an array as an element of an array:
+初始化列表可以嵌套。以下示例中，我们构造了一个以数组作为元素的数组：
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_init_list_3,indent=0]
 ----
 
-When a two element initializer list is nested within an enclosing initializer list, it is unclear whether it represents an <<ref_array>> or an <<ref_object>>:
+当一个包含两个元素的初始化列表嵌套在外部初始化列表中时，尚不明确它表示的是一个 &lt;<ref_array>&gt; 还是一个 &lt;<ref_object>&gt;：</ref_object></ref_array>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_init_list_4,indent=0]
 ----
 
-In such cases, if every element consists of a string followed by a single value, then the enclosing initializer list is interpreted as an <<ref_object>>. Otherwise, it is interpreted as an <<ref_array>>.
+在这种情况下，如果每个元素均由一个字符串后跟一个值组成，则外层的初始化列表会被解释为一个 &lt;<ref_object>&gt;；否则，它会被解释为一个 &lt;<ref_array>&gt;。</ref_array></ref_object>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_init_list_5,indent=0]
 ----
 
-To resolve the ambiguity manually, use an explicit constructor:
+要手动消除歧义，请使用显式构造函数：
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_init_list_6,indent=0]
 ----
 
-Initializer lists can be used to unambiguously construct or assign an <<ref_object>> or <<ref_array>>:
+初始化列表可用于明确地构造或赋值一个&lt;<ref_object>&gt; 或 &lt;<ref_array>&gt;：</ref_array></ref_object>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_init_list_7,indent=0]
 ----
 
-Similarly, an initializer list for an <<ref_object>> is always interpreted as an <<ref_object>>. In such cases, the initializer list must be a list of key-value pairs. For example, the following code will not compile because `1` is not convertible to a string:
+同样，用于 &lt;<ref_object>&gt; 的初始化列表始终会被解释为 &lt;<ref_object>&gt;。此时，初始化列表必须由键值对组成。例如，以下代码无法编译，因为` `1 无法转换为字符串：</ref_object></ref_object>
 
 [source]
 ----
 object jo = { { 1, 0.39 }, { "venus", 0.72 }, { "earth", 1 } };
 ----
 
-The requirement for an initializer list to be interpreted as an <<ref_object>> or <<ref_array>> when initializing such an entity only applies to the outermost initializer list; subsequent nested elements will follow the usual ambiguity resolution rules.
+当初始化一个 &lt;<ref_object>&gt; 或 &lt;<ref_array>&gt; 时，要求初始化列表被解释为对应类型的规则仅适用于最外层的初始化列表；后续嵌套的元素将遵循常规的歧义解析规则。</ref_array></ref_object>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_init_list_8,indent=0]
 ----
 
-Elements that are rvalues will be moved upon initialization:
+在初始化时，右值元素将被移动。
 
 [source]
 ----
@@ -84,4 +84,4 @@ Do not create variables of type {std_initializer_list}. This may result in
 temporaries being destroyed before the initializer list is used.
 ====
 
-In all cases, the <<ref_storage_ptr>> owned by an <<ref_object>>, <<ref_array>>, or <<ref_value>> constructed from an initializer list will be propagated to each element, recursively.
+在所有情况下，通过初始化列表构造的 &lt;<ref_object>&gt;、&lt;<ref_array>&gt; 或 &lt;<ref_value>&gt; 所拥有的 &lt;<ref_storage_ptr>&gt; 都会递归地传播到每个元素。</ref_storage_ptr></ref_value></ref_array></ref_object>
