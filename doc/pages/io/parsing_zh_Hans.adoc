@@ -9,7 +9,7 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [pagelevels=1]
-= Parsing Parsing is the process where a serialized JSON text is validated and decomposed into elements. The library provides these functions and types to assist with parsing:
+= 解析 解析是将序列化的JSON文本验证并分解为元素的过程。该库提供以下函数和类型来辅助解析：
 
 .Parsing Functions and Types
 |===
@@ -17,170 +17,170 @@ Official repository: https://github.com/boostorg/json
 
 | <<ref_basic_parser>>
 | A SAX push parser implementation which converts a serialized JSON text into
-a series of member function calls to a user provided handler. This allows custom behaviors to be implemented for representing the document in memory.
+为对用户提供的处理器的一系列成员函数调用，从而允许自定义内存中文档的表示行为
 
 | <<ref_parse_options>>
 | A structure used to select which extensions are enabled during parsing.
 
 | <<ref_parse>>
 | Parse a string containing a complete serialized JSON text, and return
-a <<ref_value>>.
+一个 &lt;&gt;。
 
 | <<ref_parser>>
 | A stateful DOM parser object which may be used to efficiently parse a series
-of JSON texts each contained in a single contiguous character buffer, returning each result as a <<ref_value>>.
+一系列 JSON 文本（每个文本均位于单独的连续字符缓冲区中），并将每个结果作为&lt;<ref_value>&gt;返回。</ref_value>
 
 | <<ref_stream_parser>>
 | A stateful DOM parser object which may be used to efficiently parse a series
-of JSON texts incrementally, returning each result as a <<ref_value>>.
+一系列JSON文本，并将每个结果作为&lt;<ref_value>&gt;返回</ref_value>
 
 | <<ref_value_stack>>
 | A low level building block used for efficiently building a <<ref_value>>. The
-parsers use this internally, and users may use it to adapt foreign parsers to produce this library's containers. |===
+解析器在内部使用它，用户也可以使用它来适配外部解析器以生成此库的容器。|===
 
-The <<ref_parse>> function offers a simple interface for converting a serialized JSON text to a <<ref_value>> in a single function call. This overload uses exceptions to indicate errors:
+&lt;<ref_parse>&gt; 函数提供了一个简单接口，用于在单个函数调用中将序列化的JSON文本转换为&lt;<ref_value>&gt;。此重载使用异常来指示错误：</ref_value></ref_parse>
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_1,indent=0]
 ----
 
-Alternatively, an {ref_error_code} can be used:
+或者，可以使用{ref_error_code}：
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_2,indent=0]
 ----
 
-Even when using error codes, exceptions thrown from the underlying {ref_memory_resource} are still possible:
+即使使用错误码，底层 {ref_memory_resource} 仍可能抛出异常：
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_3,indent=0]
 ----
 
-The <<ref_value>> returned in the preceding examples use the <<default_memory_resource,default memory resource>>. The following code uses a <<ref_monotonic_resource>>, which results in faster parsing. `jv` is marked `const` to prevent subsequent modification, because containers using a monotonic resource waste memory when mutated.
+前述示例中返回的 &lt;<ref_value>&gt; 使用了 &lt;<default_memory_resource,default memory="" resource="">&gt;（默认内存资源）。以下代码使用了 &lt;<ref_monotonic_resource>&gt;，从而实现更快的解析。`jv` 被标记为 `const` 以防止后续修改，因为使用单调内存资源的容器在被修改时会浪费内存。</ref_monotonic_resource></default_memory_resource,default></ref_value>
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_4,indent=0]
 ----
 
-== Non-Standard JSON
-Unless otherwise specified, the parser in this library is strict. It recognizes only valid, standard JSON. The parser can be configured to allow certain non-standard extensions by filling in a <<ref_parse_options>> structure and passing it by value. By default all extensions are disabled:
+== 非标准JSON
+除非另有说明，本库中的解析器采用严格模式，仅识别有效的标准 JSON。通过填充一个 &lt;<ref_parse_options>&gt; 结构并按值传递它来配置解析器，以允许某些非标准扩展。默认情况下，所有扩展都被禁用：</ref_parse_options>
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_5,indent=0]
 ----
 
-When building with {cpp}20 or later, the use of https://en.cppreference.com/w/cpp/language/aggregate_initialization#Designated_initializers[designated initializers] with <<ref_parse_options>> is possible:
+当使用 {cpp}20 或更高版本构建时，可以对 &lt;<ref_parse_options>&gt; 使用 https://en.cppreference.com/w/cpp/language/aggregate_initialization#Designated_initializers[指定初始化器]：</ref_parse_options>
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_6,indent=0]
 ----
 
-When `allow_invalid_utf16` is enabled, the parser will not throw an error in the case of illegal leading, trailing, or half a surrogate. Instead, it will replace the invalid UTF-16 code point(s) with the Unicode replacement character.
+启用 allow_invalid_utf16 后，解析器在遇到非法的前导代理、尾随代理或半个代理时不会抛出错误，而是将无效的 UTF-16 码点替换为 Unicode 替换字符。
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_15,indent=0]
 ----
 
-CAUTION: When enabling comment support take extra care not to drop whitespace
-when reading the input. For example, `std::getline` removes the endline characters from the string it produces.
+CAUTION: 启用注释支持时，需格外注意不要丢失空白字符于
+读取输入时。 例如，`std::getline`会从它生成的字符串中移除行尾字符
 
-== Full Precision Number Parsing
-The default algorithm that the library uses to parse numbers is fast, but may result in slight precision loss. This may not be suitable for some applications, so there is an option to enable an alternative algorithm that doesn't have that flaw, but is somewhat slower. To do this, you also need to use <<ref_parse_options>> structure.
+== 全精度数字解析
+库默认使用的数字解析算法速度较快，但可能导致轻微的精度损失。这在某些应用中可能不可接受，因此可以选择启用一种没有此缺陷但速度稍慢的替代算法。为此，您还需要使用&lt;<ref_parse_options>&gt;结构体。</ref_parse_options>
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_precise,indent=0]
 ----
 
-Note that full precision number parsing requires the algorithm to see the full number. This means, that when used with <<ref_stream_parser>>, additional memory allocations may be necessary to store the number parts which were so far accepted by the parser. The library does try its best to avoid such allocations.
+请注意，全精度数字解析要求算法看到完整的数字。这意味着，当与&lt;<ref_stream_parser>&gt;一起使用时，可能需要额外的内存分配来存储解析器迄今为止接受的数字部分。该库尽力避免此类分配。</ref_stream_parser>
 
-== Parser
-Instances of <<ref_parser>> and <<ref_stream_parser>> offer functionality beyond what is available when using the <<ref_parse>> free functions:
+== 解析器
+&lt;<ref_parser>&gt; 和 &lt;<ref_stream_parser>&gt; 的实例所提供的功能超出了使用 &lt;<ref_parse>&gt; 自由函数时可用的功能：</ref_parse></ref_stream_parser></ref_parser>
 
-* More control over memory
-* Streaming API, parse input JSON incrementally
-* Improved performance when parsing multiple JSON texts
-* Ignore non-JSON content after the end of a JSON text
+* 对内存的更精细控制
+* 流式 API，可增量解析输入的 JSON
+* 在解析多个JSON文本时性能更佳
+* 忽略JSON文本末尾之后的非JSON内容
 
-The parser implementation uses temporary storage space to accumulate values during parsing. When using the <<ref_parse>> free functions, this storage is allocated and freed in each call. However, by declaring an instance of <<ref_parser>> or <<ref_stream_parser>>, this temporary storage can be reused when parsing more than one JSON text, reducing the total number of dynamic memory allocations.
+解析器实现使用临时存储空间在解析过程中累积值。使用 &lt;<ref_parse>&gt; 自由函数时，该存储在每次调用中都会被分配和释放。然而，通过声明一个 &lt;<ref_parser>&gt; 或 &lt;<ref_stream_parser>&gt; 实例，可在解析多个 JSON 文本时重用该临时存储，从而减少动态内存分配的总次数。</ref_stream_parser></ref_parser></ref_parse>
 
-To use the <<ref_parser>>, declare an instance. Then call <<ref_parser_write>> once with the buffer containing representing the input JSON. Finally, call <<ref_parser_release>> to take ownership of the resulting <<ref_value>> upon success. This example persists the parser instance in a class member to reuse across calls:
+要使用 &lt;<ref_parser>&gt;，先声明一个实例。然后调用 &lt;<ref_parser_write>&gt; 一次，传入包含输入 JSON 的缓冲区。最后，在成功时调用 &lt;<ref_parser_release>&gt; 以获取生成的 &lt;<ref_value>&gt; 的所有权。以下示例将解析器实例作为类成员保存，以便在多次调用间复用：</ref_value></ref_parser_release></ref_parser_write></ref_parser>
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_7,indent=0]
 ----
 
-Sometimes a protocol may have a JSON text followed by data that is in a different format or specification. The JSON portion can still be parsed by using the function <<ref_parser_write_some>>. Upon success, the return value will indicate the number of characters consumed from the input, which will exclude the non-JSON characters:
+有时，某个协议可能在 JSON 文本之后跟随采用不同格式或规范的数据。此时仍可使用函数 &lt;<ref_parser_write_some>&gt; 来解析 JSON 部分。成功时，其返回值将指示从输入中消耗的字符数，该数量不包括非 JSON 的字符：</ref_parser_write_some>
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_8,indent=0]
 ----
 
-The parser instance may be constructed with parse options which allow some non-standard JSON extensions to be recognized:
+解析器实例可以使用解析选项构造，这些选项允许识别一些非标准JSON扩展：
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_9,indent=0]
 ----
 
-== Streaming Parser
-The <<ref_stream_parser>> implements a https://en.wikipedia.org/wiki/Online_algorithm[__streaming algorithm__]; it allows incremental processing of large JSON inputs using one or more contiguous character buffers. The entire input JSON does not need to be loaded into memory at once. A network server can use the streaming interface to process incoming JSON in fixed-size amounts, providing these benefits:
+== 流式解析器
+&lt;<ref_stream_parser>&gt;实现了一种https://en.wikipedia.org/wiki/Online_algorithm[__流式算法__]；它允许使用一个或多个连续字符缓冲区增量处理大型JSON输入。整个输入JSON无需一次性加载到内存中。网络服务器可以使用流式接口以固定大小的量处理传入的JSON，从而提供以下优势：</ref_stream_parser>
 
-* CPU consumption per I/O cycle is bounded
-* Memory consumption per I/O cycle is bounded
-* Jitter, unfairness, and latency is reduced
-* Less total memory is required to process the full input
+* 每个 I/O 周期的 CPU 消耗是有上限的
+* 每个 I/O 周期的内存消耗是有上限的
+* 减少抖动、不公平性和延迟
+* 处理完整输入所需的总内存更少
 
-To use the <<ref_stream_parser>>, declare an instance. Then call <<ref_stream_parser_write>> zero or more times with successive buffers representing the input JSON. When there are no more buffers, call <<ref_stream_parser_finish>>. The function <<ref_stream_parser_done>> returns `true` after a successful call to `write` or `finish` if parsing is complete.
+要使用 &lt;<ref_stream_parser>&gt;，请先声明一个实例。然后对表示输入 JSON 的连续缓冲区零次或多次调用 &lt;<ref_stream_parser_write>&gt;。当没有更多缓冲区时，调用 &lt;<ref_stream_parser_finish>&gt;。在成功调用`write`或`finish`后，若解析已完成，函数 &lt;<ref_stream_parser_done>&gt; 将返回`true`。</ref_stream_parser_done></ref_stream_parser_finish></ref_stream_parser_write></ref_stream_parser>
 
-In the following example a JSON text is parsed from standard input a line at a time. Error codes are used instead. The function <<ref_stream_parser_finish>> is used to indicate the end of the input:
+在以下示例中，JSON文本从标准输入逐行解析。此处使用错误码替代异常。函数&lt;<ref_stream_parser_finish>&gt;用于指示输入结束：</ref_stream_parser_finish>
 
-CAUTION: This example will break, if comments are enabled, because of
-`std::getline` use (see the warning in <<non_standard_json>> section).
+CAUTION: 如果启用了注释，此示例将失效，原因
+在于使用了 `std::getline`（参见 &lt;<non_standard_json>&gt; 章节中的警告）。</non_standard_json>
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_10,indent=0]
 ----
 
-We can complicate the example further by extracting _several_ JSON values from the sequence of lines.
+我们可以通过从行序列中提取_多个_JSON值来进一步复杂化此示例。
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_14,indent=0]
 ----
 
-== Controlling Memory
-After default construction, or after <<ref_stream_parser_reset>> is called with no arguments, the <<ref_value>> produced after a successful parse operation uses the default memory resource. To use a different memory resource, call `reset` with the resource to use. Here we use a <<ref_monotonic_resource>>, which is optimized for parsing but not subsequent modification:
+== 控制内存
+在默认构造之后，或在无参调用 &lt;<ref_stream_parser_reset>&gt; 之后，成功解析操作所生成的 &lt;<ref_value>&gt; 将使用默认内存资源。若要使用不同的内存资源，可调用 `reset`并传入目标资源。以下示例使用了 &lt;<ref_monotonic_resource>&gt;，该资源针对解析进行了优化，但不适合后续修改</ref_monotonic_resource></ref_value></ref_stream_parser_reset>
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_11,indent=0]
 ----
 
-To achieve performance and memory efficiency, the parser uses a temporary storage area to hold intermediate results. This storage is reused when parsing more than one JSON text, reducing the total number of calls to allocate memory and thus improving performance. Upon construction, the memory resource used to perform allocations for this temporary storage area may be specified. Otherwise, the default memory resource is used. In addition to a memory resource, the parser can make use of a caller-owned buffer for temporary storage. This can help avoid dynamic allocations for small inputs. The following example uses a four kilobyte temporary buffer for the parser, and falls back to the default memory resource if needed:
+为实现性能与内存效率，解析器使用一块临时存储区来保存中间结果。在解析多个 JSON 文本时，该存储区会被复用，从而减少内存分配的总次数，提升性能。构造解析器时，可指定用于此临时存储区分配的内存资源；若未指定，则使用默认内存资源。此外，解析器还可利用调用方提供的缓冲区作为临时存储，有助于避免对小型输入进行动态分配。以下示例为解析器提供了一个 4 KB 的临时缓冲区，并在需要时回退到默认内存资源：
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_12,indent=0]
 ----
 
-== Avoiding Dynamic Allocations
-Through careful specification of buffers and memory resources, it is possible to eliminate all dynamic allocation completely when parsing JSON, for the case where the entire JSON text is available in a single character buffer, as shown here:
+== 避免动态分配
+通过精心指定缓冲区和内存资源，可以在解析 JSON 时完全消除所有动态内存分配，前提是整个JSON文本在单个字符缓冲区中可用，如下所示：
 
 [source]
 ----
 include::../../../test/doc_parsing.cpp[tag=doc_parsing_13,indent=0]
 ----
 
-== Custom Parsers
-Users who wish to implement custom parsing strategies may create their own handler to use with an instance of <<ref_basic_parser>>. The handler implements the function signatures required by SAX event interface. In <<examples_validate>> example we define the "null" parser, which throws out the parsed results, to use in the implementation of a function that determines if a JSON text is valid.
+== 自定义解析器
+希望实现自定义解析策略的用户可以创建自己的处理器（handler），并与 &lt;<ref_basic_parser>&gt; 实例配合使用。该处理器需实现 SAX 事件接口所要求的函数签名。在 &lt;<examples_validate>&gt; 示例中，我们定义了一个“空”解析器（null parser），它会丢弃所有解析结果，用于实现一个判断 JSON 文本是否有效的函数。</examples_validate></ref_basic_parser>
