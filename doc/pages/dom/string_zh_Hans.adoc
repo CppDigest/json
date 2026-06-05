@@ -12,68 +12,68 @@ Official repository: https://github.com/boostorg/json
 [#dom_string]
 = `string`
 
-Modifiable sequences of characters are represented using objects of type <<ref_string>>.
+可修改的字符序列通过 &lt;<ref_string>&gt; 类型的对象表示。</ref_string>
 
-The interface and functionality of <<ref_string>> is the same as {std_string} except that:
+&lt;<ref_string>&gt; 的接口和功能与 {std_string} 相同，但有以下例外：</ref_string>
 
-* <<ref_string>> is not a class template,
-* <<ref_string>> uses `char` as its character type,
-* redundant overloads for string operations have been replaced
-with a <<ref_string_view>>-based interface,
-* access to characters in the range `[size(), capacity())` is permitted,
-* <<ref_storage_ptr>> is used instead of {req_Allocator}, and
-* small buffer optimisation is guaranteed, which avoids allocating memory for
-small strings.
+* &lt;<ref_string>&gt;不是一个类模板，</ref_string>
+* &lt;<ref_string>&gt; 使用`char`作为其字符类型，</ref_string>
+* 字符串操作中冗余的重载已被
+基于 &lt;<ref_string_view>&gt; 的接口所取代，</ref_string_view>
+* 允许访问`[size(), capacity())`范围内的字符，
+* 使用&lt;<ref_storage_ptr>&gt;代替{req_Allocator}，且</ref_storage_ptr>
+* 保证采用小缓冲区优化，从而避免为短字符串分配内存。
+(短字符串)
 
-With augmented interface, operations requiring an input string are implemented as a single overload with a parameter of type <<ref_string_view>>, and can accept most string-like objects. Objects such as null terminated character pointers, `std::string`, <<ref_string>>, subranges of strings, and objects convertible to <<ref_string_view>> can all be passed to these functions.
+通过增强的接口，所有需要输入字符串的操作均以单一重载形式实现，其参数类型为 &lt;<ref_string_view>&gt;，并可接受大多数类字符串对象。诸如以空字符结尾的字符指针、`std::string`、&lt;<ref_string>&gt;、字符串子范围以及可转换为 &lt;<ref_string_view>&gt; 的对象，均可传递给这些函数。</ref_string_view></ref_string></ref_string_view>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_strings_4,indent=0]
 ----
 
-More formally, `std::string` member function overloads that accept any of the following parameter combinations as an input string:
+更正式地说，`std::string` 类的成员函数支持以下任意一种参数组合作为输入字符串:
 
-* a `std::string` parameter, or
-* a `std::string` parameter and two `size_type` parameters that specify a
-substring, or
-* a parameter of a type convertible to <<ref_string_view>>, or
-* a parameter of a type convertible to <<ref_string_view>> and two
-`size_type` parameters that specify a substring, or
-* a `const_pointer` parameter, or
-* a parameter of type `const_pointer` and a `size_type` parameter that
-specifies the length of the string
+* 一个`std::string`参数，或
+* 一个 `std::string` 类型的参数以及两个 `size_type` 类型的参数，它们用于指定一个
+子字符串，或
+* 一个可转换为 &lt;<ref_string_view>&gt; 类型的参数，或</ref_string_view>
+* 一个可转换为 &lt;<ref_string_view>&gt; 类型的参数以及两个</ref_string_view>
+用于指定子字符串的`size_type` 类型的参数，或
+* 一个`const_pointer`参数，或
+* 一个`const_pointer`类型的参数和一个`size_type`参数，该参数用于
+指定字符串的长度,
 
-are replaced with an overload accepting a <<ref_string_view>> parameter.
+被一个接受 &lt;<ref_string_view>&gt; 参数的重载所替代。</ref_string_view>
 
-This design removes several redundant overloads from the interface. For example, the 11 overloads of `std::string::insert` are reduced to just 3 in <<ref_string>>, while still providing identical functionality. In addition to these changes, overloads taking a `std::initializer_list<char>` parameter have been removed. Such overloads have little use, as they serve as little more than wrappers for arrays with an inefficient syntax:
+这一设计从接口中移除了多个冗余的重载。例如，`std::string::insert` 原本有 11 个重载，而在 &lt;<ref_string>&gt; 中被减少到仅 3 个，同时仍提供完全相同的功能。除此之外，接受 `std::initializer_list<char>` 参数的重载也被移除。这类重载用途有限，因为它们本质上只是对字符数组的封装，且语法效率低下：</char></ref_string>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_strings_3,indent=0]
 ----
 
-With the removal of overloads that specify parameters for a substring, a member function `subview` that returns a <<ref_string_view>> is provided to facilitate cheap substring operations:
+随着用于指定子字符串参数的重载被移除，库提供了一个成员函数`subview`， 用于返回一个 &lt;<ref_string_view>&gt;，从而支持高效的子字符串操作：</ref_string_view>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_strings_2,indent=0]
 ----
 
-A <<ref_string>> may be constructed using the <<default_memory_resource,default memory resource>> without incurring any memory allocations. Alternatively, a <<ref_storage_ptr>> can be provided explicitly:
+&lt;<ref_string>&gt; 可使用 &lt;<default_memory_resource,default memory="" resource="">&gt;（默认构造资源） 进行构造，且不会产生任何内存分配。或者，也可以显式提供一个 &lt;<ref_storage_ptr>&gt;：</ref_storage_ptr></default_memory_resource,default></ref_string>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=snippet_strings_1,indent=0]
 ----
 
-== Formatted Output
+== 格式化输出
 
-When a <<ref_string>> is formatted to a {std_ostream}, the result is a valid JSON. That is, the result will be double quoted and the contents properly escaped per the JSON specification.
+当&lt;<ref_string>&gt;被格式化到{std_ostream}时，结果是一个有效的JSON。即输出结果将被双引号括起来，并且内容会根据JSON规范进行正确转义。</ref_string>
 
-== Accessing Storage Beyond `size()`
+== 访问超出`size()`范围的存储空间
 
-<<ref_string>> directly supports access to its storage in the range `[size(), capacity())`. This can be used for efficient assembly of a string from several parts. After the string is assembled, use the member function <<ref_string_grow>> to update the string's size and insert the null terminator. For example:
+&lt;<ref_string>&gt; 直接支持访问其在`[size(), capacity())`范围内的存储空间。这可用于高效地将字符串从多个部分组装起来。字符串组装完成后，可调用成员函数 &lt;<ref_string_grow>&gt; 来更新字符串的大小并插入空终止符。例如：</ref_string_grow></ref_string>
 
 [source]
 ----
