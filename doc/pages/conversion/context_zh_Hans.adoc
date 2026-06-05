@@ -7,9 +7,9 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= Contextual Conversions Previously in this section we've been assuming that there is a particular fitting JSON representation for a type. But this is not always the case. Often one needs to represent particular value with JSON of certain format in one situation and with another format in a different situation. This can be achieved with Boost.JSON by providing an extra argument---context.
+= 上下文相关的转换 此前在本节中，我们一直假定某个类型存在一种特定且合适的 JSON 表示形式。但实际情况并非总是如此。很多时候，同一个值在不同场景下需要以不同的 JSON 格式来表示。在 Boost.JSON 中，可以通过提供一个额外的参数——上下文（context）——来实现这一点。
 
-Let's implement conversion from `user_ns::ip_address` to a JSON string:
+我们来实现从`user_ns::ip_address`到JSON字符串的转换：
 
 [source]
 ----
@@ -17,79 +17,79 @@ include::../../../test/snippets.cpp[tag=doc_context_conversion_1,indent=0]
 ----
 
 
-These `tag_invoke` overloads take an extra `as_string` parameter, which disambiguates this specific representation of `ip_address` from all other potential representations. In order to take advantage of them one needs to pass an `as_string` object to <<ref_value_from>> or <<ref_value_to>> as the last argument:
+这些`tag_invoke`重载接受一个额外的`as_string`参数，用于将`ip_address`的这种特定表示形式与其他所有可能的表示形式区分开来。要使用这些重载，需要将`as_string`对象作为最后一个参数传递给 &lt;<ref_value_from>&gt; 或 &lt;<ref_value_to>&gt;：</ref_value_to></ref_value_from>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=doc_context_conversion_2,indent=0]
 ----
 
-Note, that if there is no dedicated `tag_invoke` overload for a given type and a given context, the implementation falls back to overloads without context. Thus it is easy to combine contextual conversions with conversions provided by the library:
+请注意，如果对于给定类型和给定上下文没有专用的`tag_invoke`重载，实现将回退到不带上下文的重载。因此，可以轻松地将上下文相关的转换与库提供的转换结合起来：
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=doc_context_conversion_3,indent=0]
 ----
 
-== Conversions for Third-Party Types
-Normally, you wouldn't be able to provide conversions for types from third-party libraries and standard types, because it would require yout to put `tag_invoke` overloads into namespaces you do not control. But with contexts you can put the overloads into your namespaces. This is because the context will add its associated namespaces into the list of namespaces where `tag_invoke` overloads are searched.
+== 第三方类型的转换
+通常，您无法为第三方库或标准库中的类型提供转换函数，因为这需要将`tag_invoke`重载放入您无法控制的命名空间中。但借助上下文，您可以将这些重载放在自己的命名空间里。这是因为上下文会将其关联的命名空间添加到搜索`tag_invoke`重载的命名空间列表中。
 
-As an example, let's implement conversion for https://en.cppreference.com/w/cpp/chrono/system_clock[``std::chrono::system_clock::time_point``s] using https://en.wikipedia.org/wiki/ISO_8601[ISO 8601] format.
+例如，我们来使用 https://en.wikipedia.org/wiki/ISO_8601[ISO 8601]格式，对 https://en.cppreference.com/w/cpp/chrono/system_clock[``std::chrono::system_clock::time_point``] 实现转换。
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=doc_context_conversion_4,indent=0]
 ----
 
-Reverse conversion is left out for brevity.
+为简洁起见，反向转换在此省略。
 
-The new context is used in a similar fashion to `as_string` previously in this section.
+这个新上下文的使用方式与本节前面介绍的`as_string`类似。
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=doc_context_conversion_5,indent=0]
 ----
 
-One particular use case that is enabled by contexts is adaptor libraries that define JSON conversion logic for types from a different library.
+上下文支持的一个特定用例是适配器库，这些库为来自不同库的类型定义JSON转换逻辑。
 
-== Passing Data to Conversion Functions
-Contexts we used so far were empty classes. But contexts may have data members and member functions just as any class. Implementers of conversion functions can take advantage of that to have conversions configurable at runtime or pass special objects to conversions (e.g. allocators).
+== 向转换函数传递数据
+到目前为止，我们使用的上下文都是空类。但上下文可以像普通类一样拥有数据成员和成员函数。转换函数的实现者可以利用这一点，在运行时对转换行为进行配置，或向转换函数传递特殊对象（例如分配器）。
 
-Let's rewrite conversion for ``system_clock::time_point``s to allow any format supported by `std::strftime`.
+我们来重写``system_clock::time_point``的转换，以支持`std::strftime`所支持的任意格式。
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=doc_context_conversion_6,indent=0]
 ----
 
-This `tag_invoke` overload lets us change date conversion format at runtime. Also note, that there is no ambiguity between `as_iso_8601` overload and `date_format` overload. You can use both in your program:
+这个`tag_invoke`重载允许我们在运行时更改日期转换的格式。另外请注意，`as_iso_8601`重载和`date_format`重载之间不存在歧义。您可以在程序中使用两者：
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=doc_context_conversion_7,indent=0]
 ----
 
-== Combining Contexts
-Often it is needed to use several conversion contexts together. For example, consider a log of remote users identified by IP addresses accessing a system. We can represent it as `std::vector<std::pair<std::chrono::system_clock::time_point, ip_address>>`. We want to serialize both ``ip_address``es and ``time_point``s as strings, but for this we need both `as_string` and `as_iso_8601` contexts. To combine several contexts just use {std_tuple}. Conversion functions will select the first element of the tuple for which a `tag_invoke` overload exists and will call that overload. As usual, `tag_invoke` overloads that don't use contexts and library-provided generic conversions are also supported. Thus, here's our example:
+== 组合上下文
+通常需要同时使用多个转换上下文。例如，考虑一个记录远程用户（通过 IP 地址标识）访问系统的日志，我们可以将其表示为 `std::vector<std::pair<std::chrono::system_clock::time_point, ip_address="">&gt;`。我们希望将``ip_address``和``time_point``都序列化为字符串，但这需要同时使用`as_string`和`as_iso_8601`两个上下文。要组合多个上下文，只需使用{std_tuple}。转换函数会从元组中选择第一个存在对应 `tag_invoke` 重载的元素，并调用该重载。与往常一样，不使用上下文的`tag_invoke`重载和库提供的通用转换也受支持。因此，我们的示例如下：</std::pair<std::chrono::system_clock::time_point,>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=doc_context_conversion_8,indent=0]
 ----
 
-In this snippet `time_point` is converted using `tag_invoke` overload that takes `as_iso_8601`, `ip_address` is converted using `tag_invoke` overload that takes `as_string`, and {std_vector} is converted using a generic conversion provided by the library.
+在此代码片段中，`time_point`通过接受`as_iso_8601`的`tag_invoke`重载进行转换，`ip_address`通过接受`as_string`的`tag_invoke`重载进行转换，而{std_vector}则使用库提供的通用转换进行转换。
 
-== Contexts and Composite Types
-As was shown previously, generic conversions provided by the library forward contexts to conversions of nested objects. And in the case when you want to provide your own conversion function for a composite type enabled by a particular context, you usually also need to do that.
+== 上下文与复合类型
+如前所示，库提供的通用转换会将上下文传递给嵌套对象的转换函数。因此，当您希望为特定上下文启用的某个复合类型提供自己的转换函数时，通常也需要这样做
 
-Consider this example. As was discussed in a previous section, <<ref_is_map_like>> requires that your key type satisfies <<ref_is_string_like>>. Now, let's say your keys are not string-like, but they do convert to <<ref_string>>. You can make such maps to also convert to objects using a context. But if you want to also use another context for values, you need a way to pass the full combined context to map elements. So, you want the following test to succeed.
+考虑以下示例。如前一节所述，&lt;<ref_is_map_like>&gt;要求键类型满足&lt;<ref_is_string_like>&gt;。现在，假设您的键不是类字符串类型，但它们确实可以转换为&lt;<ref_string>&gt;。您可以通过上下文使此类映射也转换为对象。但如果您想同时为值使用另一个上下文，则需要一种方式将完整的组合上下文传递给映射元素。因此，您希望以下测试能够成功。</ref_string></ref_is_string_like></ref_is_map_like>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=doc_context_conversion_9,indent=0]
 ----
 
-For this you will have to use a different overload of `tag_invoke`. This time it has to be a function template, and it should have two parameters for contexts. The first parameter is the specific context that disambiguates that particular overload. The second parameter is the full context passed to <<ref_value_to>> or <<ref_value_from>>.
+为此，您必须使用另一个`tag_invoke`重载。这次，它必须是一个函数模板，并且应包含两个上下文参数。第一个参数是用于区分该特定重载的具体上下文；第二个参数是传递给 &lt;<ref_value_to>&gt; 或&lt;<ref_value_from>&gt;的完整上下文。</ref_value_from></ref_value_to>
 
 [source]
 ----
