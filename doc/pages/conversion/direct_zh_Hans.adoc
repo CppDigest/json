@@ -7,19 +7,19 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 Official repository: https://github.com/boostorg/json
 ////
 
-= Direct Conversion For large inputs parsing into the library's containers followed by conversion via <<ref_value_to>> (or vice versa <<ref_value_from>> followed by serialization from a <<ref_value>>) might be prohibitively expensive. For these cases the library provides components that allow parsing directly into and serializing directly from user-provided objects.
+= 直接转换 对于大型输入，先解析到库的容器中，再通过 &lt;<ref_value_to>&gt; 进行转换（或反之，先通过 &lt;<ref_value_from>&gt; 转换，再从 &lt;<ref_value>&gt; 序列化）可能代价过高。针对这类场景，库提供了可直接将数据解析到用户提供的对象中、或直接从用户提供的对象进行序列化的组件。</ref_value></ref_value_from></ref_value_to>
 
-The drawback of this approach is that fully custom type representations are not supported, only the library-provided conversions are. Also all objects that should be populated by parsing have to be default constructible types. This includes not only the top-level object, but e.g. elements of containers, members of described `struct`s, and alternatives of variants.
+这种方法的缺点在于，不支持完全自定义的类型表示，仅支持库提供的转换。此外，所有需通过解析进行填充的对象都必须是可默认构造的类型——这不仅包括顶层对象，也包括容器的元素、所描述`struct`的成员以及变体类型的备选项。
 
-That being said, if your types are default-constructible and you don't need the customisability allowed by <<ref_value_to>> and <<ref_value_from>>, then you can get a significant performance boost with direct conversions.
+尽管如此，如果你的类型是可默认构造的，并且不需要 &lt;<ref_value_to>&gt; 和 &lt;<ref_value_from>&gt; 所提供的自定义能力，那么使用直接转换可以获得显著的性能提升。</ref_value_from></ref_value_to>
 
-Direct parsing is performed by the <<ref_parse_into>> family of functions. The library provides overloads that take either <<ref_string_view>> or `std::istream`, and can report errors either via throwing exceptions or setting an error code.
+直接解析是由&lt;<ref_parse_into>&gt; 系列函数执行的。库提供了接受&lt;&lt;<ref_string_view>&gt; 或`std::istream`的重载，并且可以通过抛出异常或设置错误码来报告错误。</ref_string_view></ref_parse_into>
 
 [source]
 ----
 include::../../../test/snippets.cpp[tag=doc_parse_into_1,indent=0]
 ----
 
-If you need to combine incremental parsing with direct parsing, you can resort to <<ref_parser_for>>. `parser_for<T>` is an instantiation of <<ref_basic_parser>> that parses into an object of type `T`, and is what <<ref_parse_into>> uses under the hood.
+如果需要将增量解析与直接解析结合使用，可以借助 &lt;<ref_parser_for>&gt;。`parser_for<t>`是&lt;<ref_basic_parser>&gt; 的一个实例化，用于将数据解析到类型为`T`的对象中，并且是&lt;<ref_parse_into>&gt;在底层所使用的。</ref_parse_into></ref_basic_parser></t></ref_parser_for>
 
-Direct serialization doesn't require any special components and works with the regular <<ref_serializer>> and <<ref_serialize>>.
+直接序列化不需要任何特殊组件，可直接使用常规的 &lt;<ref_serializer>&gt; 和&lt;<ref_serialize>&gt;。</ref_serialize></ref_serializer>
