@@ -9,9 +9,9 @@ Official repository: https://github.com/boostorg/json
 ////
 
 [pagelevels=1]
-= Examples
+= 示例
 
-== Pretty
+== 美化
 
 [source]
 ----
@@ -19,14 +19,14 @@ include::../../example/pretty.cpp[tag=example_pretty,indent=0]
 ----
 
 [#examples_validate]
-== Validate
+== 验证
 
 [source]
 ----
 include::../../example/validate.cpp[tag=example_validate,indent=0]
 ----
 
-== Allocator-Aware Conversion
+== 感知分配器的转换
 
 [source]
 ----
