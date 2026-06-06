@@ -1,0 +1,23 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+= 常见问题
+
+"Isn't simdjson faster?":: 这些库不可相提并论。simdjson 解析器的输出
+是一个只读结构。换句话说，它不能被修改，创建它的唯一方法是解析一个 JSON 字符串。另一方面， Boost.JSON 允许你修改容纳已解析 JSON 的容器，甚至可以通过容器接口从头构建 JSON 文档。
+
+"Why not use a standard {req_Allocator}?:: 使用标准分配器将会
+要求 &lt;<ref_value>&gt; 被声明为一个类模板，这会增加额外的编译负担。通过避免使用模板，库中的大部分函数定义可以从头文件中排除，并放入单独的静态库或动态库中。</ref_value>
+
+"为什么使用 &lt;<ref_storage_ptr>&gt; 而不是 {ref_polymorphic_allocator}？:: {ref_polymorphic_allocator} 将内存资源视为所有权的引用。Boost.JSON 使用一个引用计数智能指针容器来简化内存资源的生命周期管理。除了引用计数外，&lt;<ref_storage_ptr>&gt; 还可以作为围绕 {ref_memory_resource} 的非计数引用包装器。</ref_storage_ptr></ref_storage_ptr>
+
+
+"Why <<ref_string>> instead of {std_string}?":: 该库提供的字符串
+使用 &lt;<ref_storage_ptr>&gt;分配器模型，在所有 C++ 版本上具有相同的接口，并具有优化的类布局以保持 JSON 值的大小较小。&lt;<ref_string>&gt; 还实现了一个改进的接口，该接口使用 &lt;<ref_string_view>&gt; 替代了多余的重载。</ref_string_view></ref_string></ref_storage_ptr>

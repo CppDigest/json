@@ -1,0 +1,67 @@
+////
+Copyright (c) 2022 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+= 自定义转换 Boost.JSON 提供了两种机制用于自定义 &lt;<ref_value>&gt; 与用户类型之间的转换。一种机制涉及特化类型特征（type traits）。另一种机制更强大，需要定义`tag_invoke`的重载。本节将进一步解释这两种机制。</ref_value>
+
+== 转换特征
+之前已经介绍了一些转换类型特征，例如 &lt;<ref_is_tuple_like>&gt; 或 &lt;<ref_is_sequence_like>&gt;。库会依次尝试这些特征，并使用与第一个匹配特征对应的实现。然而，在某些情况下，某个类型可能会匹配到优先级更高的特征，而用户实际希望将其归入优先级更低的类别。如果发生这种情况，用户可以针对该类型特化那个不应匹配的特征，使其等同于`std::false_type`。</ref_is_sequence_like></ref_is_tuple_like>
+
+考虑以下类型：
+
+[source]
+----
+include::../../../test/doc_types.hpp[tag=snippet_conv_spec_trait1,indent=0]
+----
+
+它同时暴露了序列（sequence）API 和元组（tuple）API。然而，从 &lt;<ref_value>&gt; 转换到 user_ns::ip_address 时无法使用序列的实现，因为序列类型的转换会先构造一个空对象，再逐个填充元素，而 ip_address 的大小固定为 4。相比之下，元组转换是合适的。唯一的问题在于 &lt;<ref_is_tuple_like>&gt; 的优先级低于 &lt;<ref_is_sequence_like>&gt;。为绕过此问题，用户只需特化 &lt;<ref_is_sequence_like>&gt;，使其对 ip_address 不匹配即可。</ref_is_sequence_like></ref_is_sequence_like></ref_is_tuple_like></ref_value>
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_conv_spec_trait2,indent=0]
+----
+
+== `tag_invoke`重载
+第二种、更强大的方法是自行提供转换实现。在 Boost.JSON 中，这是通过定义`tag_invoke`函数的重载来实现的（该机制的优点详见 http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1895r0.pdf[C++提案P1895]）。本质上，`tag_invoke` 通过参数依赖查找（ADL）在调用点寻找可用的重载，从而为自定义扩展点提供统一接口。顾名思义，一个标签类型作为参数传递，用于：
+
+* 排除与该特定自定义点无关的候选函数，
+并且
+
+* 将用户自定义类型嵌入到参数列表中（例如，通过使用
+像`value_to_tag<t>`这样的标签类型模板），以便在执行名称查找时检查其http://eel.is/c++draft/basic.lookup.argdep#2[关联的命名空间和实体]。</t>
+
+这能够识别用户提供的`tag_invoke`重载函数，即便这些重载函数是（从词法角度来看）在调用函数的定义之后声明的。
+
+由 &lt;<ref_value_from>&gt; 调用的 `tag_invoke` 的重载形式如下：</ref_value_from>
+
+``` void tag_invoke( const value_from_tag&amp;, value&amp;, T ); ```
+
+而由 &lt;<ref_value_to>&gt; 调用的`tag_invoke`重载采用以下形式：</ref_value_to>
+
+``` T tag_invoke( const value_to_tag&lt; T &gt;&amp;, const value&amp; ); ```
+
+如果我们采用这种方式手动对 `user_ns::ip_address` 进行转换，其效果将会是这样的：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_tag_invoke_1,indent=0]
+----
+
+由于要转换的类型已嵌入到函数的签名中，因此用户自定义的重载形式会出现在依赖于参数的查找过程中，并且在进行转换时会成为候选选项：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_tag_invoke_2,indent=0]
+----
+
+用户可以自由地将具有自定义转换的类型与具有库提供转换的类型组合使用，库能正确处理它们：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_tag_invoke_3,indent=0]
+----

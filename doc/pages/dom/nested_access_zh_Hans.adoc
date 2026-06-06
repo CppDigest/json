@@ -1,0 +1,44 @@
+////
+Copyright (c) 2022 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+[#nested_access]
+= 访问深层嵌套元素 为了便于便捷地获取和修改 &lt;<ref_value>&gt; 对象中深层嵌套的元素，该库实现了 https://datatracker.ietf.org/doc/html/rfc6901[RFC 6901 (JSON Pointer)]:</ref_value>
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_pointer_1,indent=0]
+----
+
+这在不希望抛出异常的场景中尤为有用。例如，对比以下两种方式：
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_pointer_2,indent=0]
+----
+
+与
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_pointer_3,indent=0]
+----
+
+该库还支持修改和添加深层嵌套的元素。函数 &lt;<ref_value_set_at_pointer>&gt; 以与 &lt;<ref_value_at_pointer>&gt; 类似的方式遍历值，但在某些情况下还能创建缺失的元素：</ref_value_at_pointer></ref_value_set_at_pointer>
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_pointer_4,indent=0]
+----
+
+具体行为由一个类型为 &lt;<ref_set_pointer_options>&gt; 的可选参数控制。例如，以下是使用不同选项的相同示例：</ref_set_pointer_options>
+
+[source]
+----
+include::../../../test/snippets.cpp[tag=snippet_pointer_5,indent=0]
+----

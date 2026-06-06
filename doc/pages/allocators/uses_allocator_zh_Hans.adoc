@@ -1,0 +1,37 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+[#uses_allocator]
+= 使用分配器构造 为支持已使用多态分配器的代码库，本库中的容器支持 {std_uses_allocator} 构造。对于 &lt;<ref_array>&gt;, &lt;<ref_object>&gt;, &lt;<ref_string>&gt; 和 &lt;<ref_value>&gt;：</ref_value></ref_string></ref_object></ref_array>
+
+* 嵌套类型 `allocator_type` 是
+{ref_polymorphic_allocator}的别名。
+
+* 所有接受 &lt;<ref_storage_ptr>&gt; 的合格构造函数，也将</ref_storage_ptr>
+在相同参数位置接受一个 {ref_polymorphic_allocator} 实例。
+
+* 成员函数 `get_allocator` 返回一个
+由容器所使用的 {ref_memory_resource} 构造的 {ref_polymorphic_allocator} 实例。该内存资源的所有权不会被转移。
+
+实际上，这意味着当库中的容器类型被用在使用多态分配器的标准容器中时，该分配器会传播到 JSON 类型。例如：
+
+[source]
+----
+include::../../../test/doc_uses_allocator.cpp[tag=doc_uses_allocator_1,indent=0]
+----
+
+库容器可以从多态分配器构造：
+
+[source]
+----
+include::../../../test/doc_uses_allocator.cpp[tag=doc_uses_allocator_2,indent=0]
+----
+
+多态分配器会递归传播。子元素的子元素将使用与父元素相同的内存资源。

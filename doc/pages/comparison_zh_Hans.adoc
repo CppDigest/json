@@ -1,0 +1,110 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+[#comparison,pagelevels=1,toclevels=1]
+= 与其他库的比较
+
+:icon_good: pass:q[[.green]##✔##] :icon_bad:  pass:q[[.red]##✘##]
+
+C++ 中存在众多 JSON 库，但为了比较的目的，有三个在对比中尤为值得关注：https://rapidjson.org/[RapidJSON]、https://nlohmann.github.io/json/[JSON for Modern {cpp}]（本文中称为 nlohmann's JSON， 或简称 nlohmann）以及https://github.com/lemire/simdjson[SIMD JSON]。
+
+== 与nlohmann JSON的比较
+
+值类型：https://github.com/nlohmann/json/blob/00cb98a3d170161711ab912ae6acefba31f29f75/include/nlohmann/json.hpp#L165[`nlohmann::basic_json`]
+
+[source]
+----
+template<
+  template<typename, typename, typename...> class ObjectType,
+  template<typename, typename...> class ArrayType,
+  class StringType,
+  class BooleanType,
+  class NumberIntegerType,
+  class NumberUnsignedType,
+  class NumberFloatType,
+  template<typename> class AllocatorType,
+  template<typename, typename = void> class JSONSerializer
+  >
+class basic_json
+{
+private:
+  ....
+  friend ::nlohmann::detail::parser<basic_json>;
+  friend ::nlohmann::detail::serializer<basic_json>;
+...
+----
+
+该库采用了一种“大而全”（kitchen sink）的设计理念，包含大量功能，甚至涵盖一些使用场景非常小众的特性。其弱点在于：尽管众多模板参数提供了高度可配置性，却阻碍了编译器实现最优的性能优化。其结果是性能表现较差。这种对值类型各方面均可配置的能力，反而使其作为通用类型的适用性降低，形成了一种悖论效应。
+
+* {icon_bad} `basic_json` 是一个类模板。各库必须在
+模板参数的选择上达成一致，这样才能实现互操作。
+
+* {icon_bad} 过度定制化。我们很难想象
+将 `BooleanType` 设置为 `bool` 之外的其他类型的使用场景。
+
+* {icon_bad} 关注点分离不佳。`basic_json` 容器
+声明不必要地将解析和序列化API混杂在一起。
+
+* {icon_bad} 分配器支持有限。只允许无状态分配器，
+这排除了最重要的一类分配器，即基于本地内存池的实现。
+
+* {icon_bad} 没有增量式解析，也没有增量式序列化。
+
+* {icon_bad} 解析和序列化性能较差。
+
+* {icon_good} 功能全面，包含 JSON Pointer、CBOR 等特性。
+
+== 与RapidJSON的比较
+
+值类型：https://github.com/Tencent/rapidjson/blob/bb5f966b9939d6cdfbac3462a0410e185099b3af/include/rapidjson/document.h#L608[`rapidjson::GenericValue`]
+
+[source]
+----
+template <typename Encoding, typename Allocator = MemoryPoolAllocator<> >
+class GenericValue;
+
+template <bool Const, typename ValueT>
+class GenericArray;
+
+template <bool Const, typename ValueT>
+class GenericObject;
+----
+
+* {icon_bad} 值类型不满足“正规性”要求。赋值具有破坏性，
+执行 `a = b` 等同于 `a = std::move(b)`，且不允许复制构造和复制赋值。
+
+* {icon_bad} 对象类型没有哈希表或索引用于降低查找成本。
+(查找。)
+
+* {icon_bad} 分配器采用引用语义，容易引发生命周期问题。
+（容易引发。）
+
+* {icon_bad} 数组和对象类型的接口
+与标准库中的对应类型差异显著，且不符合惯用法。
+
+* {icon_bad} 没有增量式解析，也没有增量式序列化。
+
+* {icon_good} 解析和序列化性能优于大多数其他。
+库。
+
+=== 与SIMD JSON的比较
+
+[source]
+----
+class ParsedJson;
+----
+
+这是一种相当有趣的数据结构，专为与 SIMD 解析器协同工作而优化。它在目标使用场景下做出了非常优秀的设计选择。然而，由于其必要的限制，它不太适合作为通用类型。
+
+* {icon_bad} 仅支持通过 `ParsedJson::BasicIterator` 进行顺序访问
+
+* {icon_bad} 为只读类型，仅能通过所提供的 SIMD JSON 解析器进行填充。
+
+* {icon_good} 为目前最快的JSON解析器。

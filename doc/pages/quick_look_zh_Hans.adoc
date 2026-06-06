@@ -1,0 +1,217 @@
+////
+Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+Copyright (c) 2025 Dmitry Arkhipov (grisumbras@yandex.ru)
+
+Distributed under the Boost Software License, Version 1.0. (See accompanying
+file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Official repository: https://github.com/boostorg/json
+////
+
+[pagelevels=1,toclevels=1]
+= 快速浏览 这里我们通过示例代码重点介绍重要特性，以帮助理解接口风格。首先包含库头文件，该文件将所有符号引入作用域；或者，也可以包含单独的头文件以获取特定类型的声明：
+
+[source]
+----
+#include <boost/json.hpp>
+----
+
+为链接程序，您需要链接已构建的库。或者，您可以使用仅需头文件（header-only）的配置，只需在任意__一个__新建或现有源文件中包含此头文件：
+
+[source]
+----
+#include <boost/json/src.hpp>
+----
+
+[NOTE]
+====
+Sample code and identifiers used throughout are written as if the following
+declarations are in effect:
+
+[source]
+----
+#include <boost/json.hpp>
+using namespace boost::json;
+----
+====
+
+[#quick_look_values]
+== 值
+假设您要在容器中重建一下 JSON 对象：
+
+[source,json]
+----
+{
+  "pi": 3.141,
+  "happy": true,
+  "name": "Boost",
+  "nothing": null,
+  "answer": {
+    "everything": 42
+  },
+  "list": [1, 0, 2],
+  "object": {
+    "currency": "USD",
+    "value": 42.99
+  }
+}
+----
+
+在本库中，类型 &lt;<ref_array>&gt;、&lt;<ref_object>&gt; 和 &lt;<ref_string>&gt; 分别用于表示 JSON 数组、对象和字符串，而类型 &lt;<ref_value>&gt; 是一种特殊的变体（variant），可容纳任意 JSON 元素。以下示例首先构造一个空对象，然后插入上述元素：</ref_value></ref_string></ref_object></ref_array>
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_1]
+----
+
+尽管键是字符串，但对象的映射类型和数组的元素类型均为前述的 &lt;<ref_value>&gt; 类型，它可以保存任意 JSON 元素，如前文赋值所示。除了通过一系列函数调用构建 JSON 文档外，我们还可以使用初始化列表在一条语句中完成构建：</ref_value>
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_2]
+----
+
+当 &lt;<ref_value>&gt;, &lt;<ref_array>&gt;, 或 &lt;<ref_object>&gt; 通过初始化列表进行赋值或构造时，新值的创建仅发生一次。这使得初始化列表在效率上与其他创建值的方式相当。本库中的类型均为一等类型，支持复制和移动构造及赋值：</ref_object></ref_array></ref_value>
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_3]
+----
+
+[#quick_look_allocators]
+== 分配器
+为支持自定义内存分配策略，这些容器均允许通过一个 &lt;<ref_storage_ptr>&gt;（指向 {ref_memory_resource} 的智能指针）进行构造。其构造函数签名的参数顺序与使用 {req_Allocator} 参数的标准库等价类型一致。容器一旦构造完成，其内存资源便不可更改。以下代码创建了一个未执行任何动态分配的数组：</ref_storage_ptr>
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_4]
+----
+
+本库中的容器强制保持一个不变式：容器的每个元素都使用相同的内存资源：
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_5]
+----
+
+当库类型用作 PMR 容器（即使用 {ref_polymorphic_allocator} 的容器）的元素类型时，内存资源将自动传播至该类型及其所有子元素：
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_6]
+----
+
+截至目前，我们已展示如何通过内存资源指针（不转移所有权）构造值。此时调用方需确保资源生命周期覆盖容器的生命周期。有时您希望容器获取资源的共享所有权。这可通过 &lt;<ref_make_shared_resource>&gt; 实现：</ref_make_shared_resource>
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_7]
+----
+
+计数内存资源在拥有其共享所有权的每个容器均被销毁之前，是不会被销毁的。
+
+[#quick_look_parsing]
+== 解析
+可使用自由函数将 JSON 一步解析至值容器。在以下代码片段中，解析错误通过抛出异常指示：
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_8]
+----
+
+也支持错误码：
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_9]
+----
+
+默认情况下，解析器采用严格模式，仅接受符合标准的 JSON。但可通过填充一个选项结构体来启用一个或多个扩展，从而放宽此行为。以下示例使用静态缓冲区并启用了两个非标准扩展：
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_10]
+----
+
+本库中的解析器实现了一种 https://en.wikipedia.org/wiki/Online_algorithm[__streaming algorithm__]（流式算法）；它可逐段处理 JSON，无需从一开始就提供完整输入。解析器在工作时会使用临时内存分配。如果计划解析多个 JSON（例如在网络服务器中），复用同一个解析器实例可以重用该临时存储，从而提升性能。
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_11]
+----
+
+通过合理使用适当的内存资源、解析器实例及缓冲区大小的计算上限，可在不进行__任何__动态内存分配的情况下解析和检查 JSON。后续章节将对此进行更详细探讨。
+
+[#quick_look_serializing]
+== 序列化
+提供了简单的自由函数，用于将 &lt;<ref_value>&gt; 序列化为包含 JSON 的 {std_string}：</ref_value>
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_12]
+----
+
+本库中的序列化器实现了 https://en.wikipedia.org/wiki/Online_algorithm[__streaming algorithm__]（流式算法）；它可逐段输出 JSON，无需一次性分配整个输出空间：
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_13]
+----
+
+[#quick_look_conversion]
+== 值转换
+给定一个用户定义的类型：
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_14]
+----
+
+我们可在同一命名空间中定义 `tag_invoke` 的重载，来实现从用户定义类型到 &lt;<ref_value>&gt; 的转换。此操作将 `customer` 映射为 JSON 对象：</ref_value>
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_15]
+----
+
+这允许我们可以使用库函数 &lt;<ref_value_from>&gt; 从我们的类型生成一个 &lt;<ref_value>&gt;：</ref_value></ref_value_from>
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_16]
+----
+
+该库能够自动处理标准容器。以下我们将一个客户数组转换为一个值：
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_17]
+----
+
+为将 JSON 转换为用户定义类型，我们使用 &lt;<ref_value_to>&gt;（它会调用 `tag_invoke` 的另一个重载）。此操作将 JSON 值转换为 `customer`。若值内容不符合预期，则抛出异常：</ref_value_to>
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_18]
+----
+
+上述代码定义了便捷函数 `extract`，它能推导结构体成员的类型。这种方式可行，但要求该结构体是 {req_DefaultConstructible}。另一种方法是直接构造对象，虽然略显冗长，但无需默认构造：
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_19]
+----
+
+现在我们可以从 JSON 构造客户对象（customer）：
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_20]
+----
+
+当将 &lt;<ref_value>&gt; 转换为类似数组或对象的容器时，库的通用算法可自动识别。因此若要将 JSON 数组转换为客户向量，可编写如下代码：</ref_value>
+
+[source]
+----
+include::../../test/doc_quick_look.cpp[tag=doc_quick_look_21]
+----
